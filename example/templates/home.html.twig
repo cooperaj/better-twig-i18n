@@ -1,0 +1,19 @@
+<html>
+<head>
+    <title>{% trans %}A test page{% endtrans %}</title>
+</head>
+<body>
+    <h1>{% trans %}A test page{% context %}Page title{% endtrans %}</h1>
+
+    {% set var = 'translated variable' | trans -%}
+    <p>{% trans with {'%variable%': var} %}A quick test of a "%variable%"{% endtrans %}</p>
+
+    <dl>
+        <dt>{% trans %}Test of a plural statement{% endtrans %}</dt>
+        <dd>{% trans count 3 %}I have an apple|I have %count% apples{% notes %}A simple plural count of apples{% endtrans %}</dd>
+
+        <dt>{% trans %}Test of a second context{% endtrans %}</dt>
+        <dd>{% trans %}A test page{% context %}Within a list{% endtrans %}</dd>
+    </dl>
+</body>
+</html>

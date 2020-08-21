@@ -1,0 +1,42 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en_GB\n"
+
+#: templates/home.html.twig:3
+msgid "A test page"
+msgstr ""
+
+#: templates/home.html.twig:6
+msgctxt "Page title"
+msgid "A test page"
+msgstr ""
+
+#: templates/home.html.twig:8
+msgid "translated variable"
+msgstr ""
+
+#: templates/home.html.twig:9
+msgid "A quick test of a \"%variable%\""
+msgstr ""
+
+#: templates/home.html.twig:12
+msgid "Test of a plural statement"
+msgstr ""
+
+#. TRANSLATORS: A simple plural count of apples
+#: templates/home.html.twig:13
+msgid "I have an apple"
+msgid_plural "I have %count% apples"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/home.html.twig:15
+msgid "Test of a second context"
+msgstr ""
+
+#: templates/home.html.twig:16
+msgctxt "Within a list"
+msgid "A test page"
+msgstr ""
