@@ -85,6 +85,7 @@ class TranslationExtension extends AbstractExtension
 
     public function trans(
         string $message,
+        string $context = null,
         array $arguments = [],
         string $domain = null,
         string $locale = null,

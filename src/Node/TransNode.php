@@ -79,6 +79,19 @@ final class TransNode extends Node
 
         $compiler->raw(', ');
 
+        if ($this->hasNode('context')) {
+            $compiler->subcompile(
+                new ConstantExpression(
+                    trim($this->getNode('context')->getAttribute('data')),
+                    $this->getNode('context')->getTemplateLine()
+                )
+            );
+        } else {
+            $compiler->raw('null');
+        }
+
+        $compiler->raw(', ');
+
         if (null !== $vars) {
             $compiler
                 ->raw('array_merge(')
