@@ -6,6 +6,7 @@ namespace Acpr\I18n;
 
 use Symfony\Component\Translation\Exception\InvalidArgumentException;
 use Symfony\Component\Translation\MessageCatalogueInterface;
+use Symfony\Component\Translation\MetadataAwareInterface;
 use Symfony\Component\Translation\TranslatorBagInterface;
 use Symfony\Contracts\Translation\LocaleAwareInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -18,15 +19,17 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  *
  * @package Acpr\I18n
  */
-class ContextAwareTranslator implements TranslatorInterface, TranslatorBagInterface, LocaleAwareInterface
+class ContextAwareTranslator implements ContextAwareTranslatorInterface, TranslatorBagInterface, LocaleAwareInterface
 {
+    private MessageContextualiser $contextualiser;
+
     /** @var TranslatorBagInterface|LocaleAwareInterface|TranslatorInterface */
     private $translator;
 
     /**
      * @param TranslatorInterface $translator Translator instance to decorate
      */
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(TranslatorInterface $translator, MessageContextualiser $contextualiser)
     {
         if (!$translator instanceof TranslatorBagInterface || !$translator instanceof LocaleAwareInterface) {
             throw new InvalidArgumentException(
@@ -39,6 +42,7 @@ class ContextAwareTranslator implements TranslatorInterface, TranslatorBagInterf
         }
 
         $this->translator = $translator;
+        $this->contextualiser = $contextualiser;
     }
 
     /**
@@ -68,8 +72,29 @@ class ContextAwareTranslator implements TranslatorInterface, TranslatorBagInterf
     /**
      * @inheritDoc
      */
-    public function trans(string $id, array $parameters = [], string $domain = null, string $locale = null): string
-    {
+    public function trans(
+        string $id,
+        array $parameters = [],
+        ?string $domain = null,
+        ?string $locale = null
+    ): string {
+        $this->transWithContext($id, '', $parameters, $domain, $locale);
+    }
+
+    /**
+     * A context aware translator expects to have to de/contextulalise the $id of a string
+     */
+    public function transWithContext(
+            string $id,
+            string $context = '',
+            array $parameters = [],
+            ?string $domain = null,
+            ?string $locale = null
+        ): string {
+
+        /** @var MetadataAwareInterface $metadata */
+        $metadata = $this->getCatalogue()->getMetaData($id, $domain);
+
         return $this->translator->trans($id, $parameters, $domain, $locale);
     }
 

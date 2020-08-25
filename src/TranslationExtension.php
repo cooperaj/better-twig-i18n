@@ -85,16 +85,16 @@ class TranslationExtension extends AbstractExtension
 
     public function trans(
         string $message,
-        string $context = null,
+        ?string $context = null,
         array $arguments = [],
-        string $domain = null,
-        string $locale = null,
-        int $count = null
+        ?string $domain = null,
+        ?string $locale = null,
+        ?int $count = null
     ): string {
         if (null !== $count) {
             $arguments['%count%'] = $count;
         }
 
-        return $this->getTranslator()->trans($message, $arguments, $domain, $locale);
+        return $this->getTranslator()->transWithContext($message, $context, $arguments, $domain, $locale);
     }
 }

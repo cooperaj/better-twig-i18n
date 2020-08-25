@@ -87,7 +87,7 @@ final class TransNode extends Node
                 )
             );
         } else {
-            $compiler->raw('null');
+            $compiler->raw('""');
         }
 
         $compiler->raw(', ');

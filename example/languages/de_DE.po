@@ -1,0 +1,50 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"X-Generator: Poedit 2.4.1\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: de_DE\n"
+
+#: templates/home.html.twig:3
+msgid "A test page"
+msgstr "Eine Testseite"
+
+#: templates/home.html.twig:6
+msgctxt "Page title"
+msgid "A test page"
+msgstr "Eine Testseite (Title)"
+
+#: templates/home.html.twig:8
+msgid "translated variable"
+msgstr "übersetzte Variable"
+
+#: templates/home.html.twig:9
+msgid "A quick test of a \"%variable%\""
+msgstr "Ein Schnelltest einer \"%variable%\""
+
+#: templates/home.html.twig:12
+msgid "Test of a plural statement"
+msgstr "Test einer Pluralanweisung"
+
+#. TRANSLATORS: A simple plural count of apples
+#: templates/home.html.twig:13
+msgid "I have an apple"
+msgid_plural "I have %count% apples"
+msgstr[0] "Ich habe einen Apfel"
+msgstr[1] "Ich habe %count% Apfel"
+
+#: templates/home.html.twig:15
+msgid "Test of a second context"
+msgstr "Test eines zweiten Kontexts"
+
+#: templates/home.html.twig:16
+msgctxt "Within a list"
+msgid "A test page"
+msgstr "Eine Testseite (List)"
