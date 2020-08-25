@@ -1,6 +1,6 @@
 {
-  "name": "cooperaj/improved-symfony-po-extractor",
-  "description": "Adds some extra functionality to the standard Symfony translation components to improve extraction of language from project files",
+  "name": "cooperaj/better-twig-i18n",
+  "description": "Provides i18n functionality based on gettext language files.",
   "minimum-stability": "stable",
   "license": "mit",
   "authors": [
@@ -10,9 +10,10 @@
     }
   ],
   "require": {
-    "symfony/translation": "^4.0 || ^5.0",
+    "ext-gettext": "*",
     "symfony/twig-bridge": "^4.0 || ^5.0",
-    "symfony/finder": "^4.0 || ^5.0"
+    "symfony/finder": "^4.0 || ^5.0",
+    "gettext/gettext": "^v4.8.2"
   },
   "require-dev": {
     "phpunit/phpunit": "^9.3",

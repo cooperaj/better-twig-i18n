@@ -34,7 +34,6 @@ final class TransNode extends Node
         AbstractExpression $vars = null,
         TextNode $notes = null,
         TextNode $context = null,
-        AbstractExpression $locale = null,
         int $lineno = 0,
         string $tag = null
     ) {
@@ -53,9 +52,6 @@ final class TransNode extends Node
         }
         if (null !== $context) {
             $nodes['context'] = $context;
-        }
-        if (null !== $locale) {
-            $nodes['locale'] = $locale;
         }
 
         parent::__construct($nodes, [], $lineno, $tag);
@@ -87,7 +83,7 @@ final class TransNode extends Node
                 )
             );
         } else {
-            $compiler->raw('""');
+            $compiler->raw('null');
         }
 
         $compiler->raw(', ');
@@ -110,15 +106,6 @@ final class TransNode extends Node
             $compiler->repr('messages');
         } else {
             $compiler->subcompile($this->getNode('domain'));
-        }
-
-        if ($this->hasNode('locale')) {
-            $compiler
-                ->raw(', ')
-                ->subcompile($this->getNode('locale'))
-            ;
-        } elseif ($this->hasNode('count')) {
-            $compiler->raw(', null');
         }
 
         if ($this->hasNode('count')) {
