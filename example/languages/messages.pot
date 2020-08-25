@@ -1,8 +1,15 @@
 msgid ""
 msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: en_GB\n"
+"POT-Creation-Date: 2020-08-25T18:02:34+00:00\n"
+"PO-Revision-Date: 2020-08-25T18:02:34+00:00\n"
+"Language: \n"
 
 #: templates/home.html.twig:3
 msgid "A test page"
@@ -25,12 +32,10 @@ msgstr ""
 msgid "Test of a plural statement"
 msgstr ""
 
-#. TRANSLATORS: A simple plural count of apples
+#. A simple plural count of apples
 #: templates/home.html.twig:13
-msgid "I have an apple"
-msgid_plural "I have %count% apples"
-msgstr[0] ""
-msgstr[1] ""
+msgid "I have an apple|I have %count% apples"
+msgstr ""
 
 #: templates/home.html.twig:15
 msgid "Test of a second context"
@@ -39,4 +44,17 @@ msgstr ""
 #: templates/home.html.twig:16
 msgctxt "Within a list"
 msgid "A test page"
+msgstr ""
+
+#: templates/home.html.twig:18
+msgid "Test of a manual domain"
+msgstr ""
+
+#: templates/home.html.twig:21
+msgid "Test of a language choice (en_GB)"
+msgstr ""
+
+#: templates/home.html.twig:22
+msgctxt "Leave as english"
+msgid "This should be in english"
 msgstr ""

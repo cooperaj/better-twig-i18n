@@ -14,6 +14,12 @@
 
         <dt>{% trans %}Test of a second context{% endtrans %}</dt>
         <dd>{% trans %}A test page{% context %}Within a list{% endtrans %}</dd>
+
+        <dt>{% trans %}Test of a manual domain{% endtrans %}</dt>
+        <dd>{% trans from 'errors' %}This is an error{% endtrans %}</dd>
+
+        <dt>{% trans %}Test of a language choice (en_GB){% endtrans %}</dt>
+        <dd>{% trans %}This should be in english{% context %}Leave as english{% endtrans %}</dd>
     </dl>
 </body>
 </html>

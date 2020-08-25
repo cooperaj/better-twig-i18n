@@ -2,11 +2,8 @@
 
 declare(strict_types=1);
 
-use Acpr\I18n\ContextAwareTranslator;
-use Acpr\I18n\Loader\MoFileLoader;
-use Acpr\I18n\MessageContextualiser;
 use Acpr\I18n\TranslationExtension;
-use Symfony\Component\Translation\Translator;
+use Acpr\I18n\Translator;
 use Twig\Environment;
 
 require '../vendor/autoload.php';
@@ -14,10 +11,11 @@ require '../vendor/autoload.php';
 $twig = new Environment(new Twig\Loader\FilesystemLoader('templates/'));
 $twig->setCache(false);
 
-$symfonyTranslator = new Translator('de_DE');
-$symfonyTranslator->addLoader('mo', new MoFileLoader());
-$symfonyTranslator->addResource('mo', 'languages/de_DE.mo', 'de_DE');
-$translator = new ContextAwareTranslator($symfonyTranslator, new MessageContextualiser());
+$gettextTranslator = new Gettext\GettextTranslator('de');
+$gettextTranslator->loadDomain('messages', 'languages');
+$gettextTranslator->loadDomain('errors', 'languages');
+
+$translator = new Translator($gettextTranslator);
 
 $translation = new TranslationExtension($translator);
 $twig->addExtension($translation);
