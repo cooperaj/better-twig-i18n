@@ -7,8 +7,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-08-25T18:02:34+00:00\n"
-"PO-Revision-Date: 2020-08-25T18:02:34+00:00\n"
+"POT-Creation-Date: 2020-08-26T10:14:18+00:00\n"
+"PO-Revision-Date: 2020-08-26T10:14:18+00:00\n"
 "Language: \n"
 
 #: templates/home.html.twig:3
@@ -20,41 +20,54 @@ msgctxt "Page title"
 msgid "A test page"
 msgstr ""
 
-#: templates/home.html.twig:8
+#: templates/home.html.twig:9
 msgid "translated variable"
 msgstr ""
 
-#: templates/home.html.twig:9
+#: templates/home.html.twig:10
+msgid "Test of a translated variable"
+msgstr ""
+
+#: templates/home.html.twig:11
 msgid "A quick test of a \"%variable%\""
 msgstr ""
 
-#: templates/home.html.twig:12
+#: templates/home.html.twig:13
 msgid "Test of a plural statement"
 msgstr ""
 
 #. A simple plural count of apples
-#: templates/home.html.twig:13
-msgid "I have an apple|I have %count% apples"
-msgstr ""
+#: templates/home.html.twig:14
+msgid "I have an apple"
+msgid_plural "I have %count% apples"
+msgstr[0] ""
 
-#: templates/home.html.twig:15
+#: templates/home.html.twig:16
 msgid "Test of a second context"
 msgstr ""
 
-#: templates/home.html.twig:16
+#: templates/home.html.twig:17
 msgctxt "Within a list"
 msgid "A test page"
 msgstr ""
 
-#: templates/home.html.twig:18
+#: templates/home.html.twig:19
 msgid "Test of a manual domain"
 msgstr ""
 
-#: templates/home.html.twig:21
+#: templates/home.html.twig:22
 msgid "Test of a language choice (en_GB)"
 msgstr ""
 
-#: templates/home.html.twig:22
+#: templates/home.html.twig:23
 msgctxt "Leave as english"
 msgid "This should be in english"
+msgstr ""
+
+#: templates/home.html.twig:25
+msgid "Test of a missing placeholder"
+msgstr ""
+
+#: templates/home.html.twig:26
+msgid "A quick test of a \"%missing%\" variable"
 msgstr ""
