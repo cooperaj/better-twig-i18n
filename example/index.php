@@ -13,7 +13,7 @@ $twig->setCache(false);
 
 $gettextTranslator = new Gettext\GettextTranslator('de');
 $gettextTranslator->loadDomain('messages', 'languages');
-$gettextTranslator->loadDomain('errors', 'languages');
+$gettextTranslator->loadDomain('errors', 'languages', false);
 
 $translator = new Translator($gettextTranslator);
 

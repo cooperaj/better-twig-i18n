@@ -1,14 +1,15 @@
-<html>
+<html lang="de_DE">
 <head>
     <title>{% trans %}A test page{% endtrans %}</title>
 </head>
 <body>
     <h1>{% trans %}A test page{% context %}Page title{% endtrans %}</h1>
 
-    {% set var = 'translated variable' | trans -%}
-    <p>{% trans with {'%variable%': var} %}A quick test of a "%variable%"{% endtrans %}</p>
-
     <dl>
+        {% set var = 'translated variable' | trans -%}
+        <dt>{% trans %}Test of a translated variable{% endtrans %}</dt>
+        <dd>{% trans with {'%variable%': var} %}A quick test of a "%variable%"{% endtrans %}</dd>
+
         <dt>{% trans %}Test of a plural statement{% endtrans %}</dt>
         <dd>{% trans count 3 %}I have an apple|I have %count% apples{% notes %}A simple plural count of apples{% endtrans %}</dd>
 
@@ -20,6 +21,9 @@
 
         <dt>{% trans %}Test of a language choice (en_GB){% endtrans %}</dt>
         <dd>{% trans %}This should be in english{% context %}Leave as english{% endtrans %}</dd>
+
+        <dt>{% trans %}Test of a missing placeholder{% endtrans %}</dt>
+        <dd>{% trans %}A quick test of a "%missing%" variable{% endtrans %}</dd>
     </dl>
 </body>
 </html>
