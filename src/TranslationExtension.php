@@ -15,8 +15,6 @@ namespace Acpr\I18n;
 
 use Acpr\I18n\NodeVisitor\TranslationNodeVisitor;
 use Acpr\I18n\TokenParser\TransTokenParser;
-use Symfony\Bridge\Twig\NodeVisitor\TranslationDefaultDomainNodeVisitor;
-use Symfony\Bridge\Twig\TokenParser\TransDefaultDomainTokenParser;
 use Twig\Extension\AbstractExtension;
 use Twig\NodeVisitor\NodeVisitorInterface;
 use Twig\TwigFilter;
@@ -62,10 +60,7 @@ class TranslationExtension extends AbstractExtension
     {
         return [
             // {% trans %}Symfony is great!{% endtrans %}
-            new TransTokenParser(),
-
-            // {% trans_default_domain "foobar" %}
-            new TransDefaultDomainTokenParser(),
+            new TransTokenParser()
         ];
     }
 
@@ -74,7 +69,7 @@ class TranslationExtension extends AbstractExtension
      */
     public function getNodeVisitors(): array
     {
-        return [$this->getTranslationNodeVisitor(), new TranslationDefaultDomainNodeVisitor()];
+        return [$this->getTranslationNodeVisitor()];
     }
 
     public function getTranslationNodeVisitor(): NodeVisitorInterface

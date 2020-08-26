@@ -11,7 +11,7 @@
   ],
   "require": {
     "ext-gettext": "*",
-    "symfony/twig-bridge": "^4.0 || ^5.0",
+    "twig/twig": "v3.0.5",
     "symfony/finder": "^4.0 || ^5.0",
     "gettext/gettext": "^v5.5.1",
     "gettext/translator": "^v1.0.0"
