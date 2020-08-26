@@ -1,6 +1,8 @@
 Better Twig Gettext i18n
 ======
 
+![Build](https://github.com/cooperaj/better-twig-i18n/workflows/Build/badge.svg)
+
 Allows the use of a POT/PO/MO (gettext) set of language definitions with Twig, using an identical syntax to the current
 official [Twig translation extension](https://github.com/symfony/twig-bridge).
 
