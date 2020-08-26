@@ -7,6 +7,13 @@ namespace Acpr\I18n;
 interface TranslatorInterface
 {
     /**
+     * Set the locale of the translator
+     *
+     * @param string $locale
+     */
+    public function setLocale(string $locale): void;
+
+    /**
      * @return \Gettext\TranslatorInterface The underlying Gettext translation instance.
      */
     public function getTranslator(): \Gettext\TranslatorInterface;

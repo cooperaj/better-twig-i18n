@@ -4,16 +4,25 @@ declare(strict_types=1);
 
 namespace Acpr\I18n;
 
+use Gettext\GettextTranslator;
 use Gettext\TranslatorInterface as GettextTranslatorInterface;
 
 class Translator implements TranslatorInterface
 {
-    /** @var GettextTranslatorInterface */
-    private GettextTranslatorInterface $translator;
+    /** @var GettextTranslator|GettextTranslatorInterface */
+    private GettextTranslator $translator;
 
-    public function __construct(GettextTranslatorInterface $translator)
+    public function __construct(GettextTranslator $translator)
     {
         $this->translator = $translator;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setLocale(string $locale): void
+    {
+        $this->getTranslator()->setLanguage($locale);
     }
 
     /**
