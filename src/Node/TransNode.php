@@ -73,8 +73,8 @@ final class TransNode extends Node
         }
         [$msg, $plural, $defaults] = $this->compileString(
             $this->getNode('body'),
-            $this->hasNode('count') ? $this->getNode('plural') : null,
             $defaults,
+            $this->hasNode('count') ? $this->getNode('plural') : null,
             (bool) $vars
         );
 
@@ -130,8 +130,12 @@ final class TransNode extends Node
         $compiler->raw(");\n");
     }
 
-    private function compileString(Node $body, ?Node $plural = null, ArrayExpression $vars, bool $ignoreStrictCheck = false): array
-    {
+    private function compileString(
+        Node $body,
+        ArrayExpression $vars,
+        ?Node $plural = null,
+        bool $ignoreStrictCheck = false
+    ): array {
         if ($body instanceof TextNode) {
             $msg = $body->getAttribute('data');
         } else {
