@@ -24,5 +24,8 @@
     "psr-4": {
       "Acpr\\I18n\\": "src/"
     }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit"
   }
 }
