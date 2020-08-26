@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Acpr\I18n;
 
+use Gettext\Translation;
 use Gettext\Translations;
 use InvalidArgumentException;
 use SplFileInfo;
@@ -30,12 +31,14 @@ use Twig\Source;
 class TwigExtractor implements ExtractorInterface
 {
     protected const DEFAULT_DOMAIN = 'messages';
+    private string $defaultDomain;
 
     protected Environment $twig;
 
-    public function __construct(Environment $twig)
+    public function __construct(Environment $twig, string $defaultDomain = self::DEFAULT_DOMAIN)
     {
         $this->twig = $twig;
+        $this->defaultDomain = $defaultDomain;
     }
 
     /**
@@ -82,22 +85,26 @@ class TwigExtractor implements ExtractorInterface
         foreach ($visitor->getMessages() as $message) {
             $key = trim($message[0]);
 
-            $domain = $message[2] ?: self::DEFAULT_DOMAIN;
+            $domain = $message[2] ?: $this->defaultDomain;
 
-            $translations[$domain] = $catalogue = $translations[$domain] ?? new Translations();
+            $translations[$domain] = $catalogue = $translations[$domain] ?? Translations::create($domain);
 
-            $translation = $catalogue->createNewTranslation($message[4], $key, $message[1]);
+            $translation = Translation::create($message[4], $key);
 
-            $translation->addReference(
+            if ($message[1] !== null) {
+                $translation->setPlural($message[1]);
+            }
+
+            $translation->getReferences()->add(
                 $parser->getSourceContext()->getPath() . '/' . $parser->getSourceContext()->getName(),
                 $message[5]
             );
 
             if ($message[3] !== null) {
-                $translation->addExtractedComment($message[3]);
+                $translation->getExtractedComments()->add($message[3]);
             }
 
-            $catalogue[] = $translation;
+            $catalogue->add($translation);
         }
 
         $visitor->disable();
