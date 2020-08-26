@@ -82,19 +82,19 @@ class TwigExtractor implements ExtractorInterface
         foreach ($visitor->getMessages() as $message) {
             $key = trim($message[0]);
 
-            $domain = $message[1] ?: self::DEFAULT_DOMAIN;
+            $domain = $message[2] ?: self::DEFAULT_DOMAIN;
 
             $translations[$domain] = $catalogue = $translations[$domain] ?? new Translations();
 
-            $translation = $catalogue->createNewTranslation($message[3], $key, null);
+            $translation = $catalogue->createNewTranslation($message[4], $key, $message[1]);
 
             $translation->addReference(
                 $parser->getSourceContext()->getPath() . '/' . $parser->getSourceContext()->getName(),
-                $message[4]
+                $message[5]
             );
 
-            if ($message[2] !== null) {
-                $translation->addExtractedComment($message[2]);
+            if ($message[3] !== null) {
+                $translation->addExtractedComment($message[3]);
             }
 
             $catalogue[] = $translation;

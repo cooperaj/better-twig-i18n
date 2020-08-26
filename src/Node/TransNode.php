@@ -28,7 +28,8 @@ use Twig\Node\TextNode;
 final class TransNode extends Node
 {
     public function __construct(
-        Node $body,
+        Node $original,
+        Node $plural = null,
         Node $domain = null,
         AbstractExpression $count = null,
         AbstractExpression $vars = null,
@@ -37,7 +38,11 @@ final class TransNode extends Node
         int $lineno = 0,
         string $tag = null
     ) {
-        $nodes = ['body' => $body];
+        $nodes = ['body' => $original];
+
+        if (null !== $plural) {
+            $nodes['plural'] = $plural;
+        }
         if (null !== $domain) {
             $nodes['domain'] = $domain;
         }
@@ -66,25 +71,17 @@ final class TransNode extends Node
             $defaults = $this->getNode('vars');
             $vars = null;
         }
-        [$msg, $defaults] = $this->compileString($this->getNode('body'), $defaults, (bool) $vars);
+        [$msg, $plural, $defaults] = $this->compileString(
+            $this->getNode('body'),
+            $this->hasNode('count') ? $this->getNode('plural') : null,
+            $defaults,
+            (bool) $vars
+        );
 
         $compiler
             ->write('echo $this->env->getExtension(\'Acpr\I18n\TranslationExtension\')->trans(')
             ->subcompile($msg)
         ;
-
-        $compiler->raw(', ');
-
-        if ($this->hasNode('context')) {
-            $compiler->subcompile(
-                new ConstantExpression(
-                    trim($this->getNode('context')->getAttribute('data')),
-                    $this->getNode('context')->getTemplateLine()
-                )
-            );
-        } else {
-            $compiler->raw('null');
-        }
 
         $compiler->raw(', ');
 
@@ -108,8 +105,23 @@ final class TransNode extends Node
             $compiler->subcompile($this->getNode('domain'));
         }
 
+        $compiler->raw(', ');
+
+        if ($this->hasNode('context')) {
+            $compiler->subcompile(
+                new ConstantExpression(
+                    trim($this->getNode('context')->getAttribute('data')),
+                    $this->getNode('context')->getTemplateLine()
+                )
+            );
+        } else {
+            $compiler->raw('null');
+        }
+
         if ($this->hasNode('count')) {
             $compiler
+                ->raw(', ')
+                ->subcompile($plural)
                 ->raw(', ')
                 ->subcompile($this->getNode('count'))
             ;
@@ -118,17 +130,22 @@ final class TransNode extends Node
         $compiler->raw(");\n");
     }
 
-    private function compileString(Node $body, ArrayExpression $vars, bool $ignoreStrictCheck = false): array
+    private function compileString(Node $body, ?Node $plural = null, ArrayExpression $vars, bool $ignoreStrictCheck = false): array
     {
-        if ($body instanceof ConstantExpression) {
-            $msg = $body->getAttribute('value');
-        } elseif ($body instanceof TextNode) {
+        if ($body instanceof TextNode) {
             $msg = $body->getAttribute('data');
         } else {
             return [$body, $vars];
         }
 
-        preg_match_all('/(?<!%)%([^%]+)%/', $msg, $matches);
+        $pmsg = '';
+        if ($plural !== null) {
+            $pmsg = $plural->getAttribute('data');
+        }
+
+        // for the purposes of figuring out default variable substitution values concatenate the
+        // message and plural strings together.
+        preg_match_all('/(?<!%)%([^%]+)%/', $msg . $pmsg, $matches);
 
         foreach ($matches[1] as $var) {
             $key = new ConstantExpression('%'.$var.'%', $body->getTemplateLine());
@@ -143,6 +160,18 @@ final class TransNode extends Node
             }
         }
 
-        return [new ConstantExpression(str_replace('%%', '%', trim($msg)), $body->getTemplateLine()), $vars];
+        return [
+            new ConstantExpression(
+                str_replace('%%', '%', trim($msg)),
+                $body->getTemplateLine()
+            ),
+            $plural !== null
+            ? new ConstantExpression(
+                str_replace('%%', '%', trim($pmsg)),
+                $body->getTemplateLine()
+            )
+            : null,
+            $vars
+        ];
     }
 }

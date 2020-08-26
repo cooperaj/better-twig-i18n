@@ -41,6 +41,7 @@ final class TransTokenParser extends AbstractTokenParser
         $notes = null;
         $context = null;
         $domain = null;
+        $plural = null;
 
         if (!$stream->test(Token::BLOCK_END_TYPE)) {
             if ($stream->test('count')) {
@@ -59,9 +60,17 @@ final class TransTokenParser extends AbstractTokenParser
                 // {% trans from "messages" %}
                 $stream->next();
                 $domain = $this->parser->getExpressionParser()->parseExpression();
+            }
+
+            if ($stream->test('into')) {
+                throw new SyntaxError(
+                    'The "into" tag is not available in this iteration of the twig translation syntax',
+                    $stream->getCurrent()->getLine(),
+                    $stream->getSourceContext()
+                );
             } elseif (!$stream->test(Token::BLOCK_END_TYPE)) {
                 throw new SyntaxError(
-                    'Unexpected token. Twig was looking for the "with", "from", or "into" keyword.',
+                    'Unexpected token. Twig was looking for the "with", or "from" keyword.',
                     $stream->getCurrent()->getLine(),
                     $stream->getSourceContext()
                 );
@@ -123,7 +132,11 @@ final class TransTokenParser extends AbstractTokenParser
         $stream->next();
         $stream->expect(Token::BLOCK_END_TYPE);
 
-        return new TransNode($body, $domain, $count, $vars, $notes, $context, $lineno, $this->getTag());
+        if ($count !== null) {
+            [$body, $plural] = $this->parsePluralisation($body);
+        }
+
+        return new TransNode($body, $plural, $domain, $count, $vars, $notes, $context, $lineno, $this->getTag());
     }
 
     public function decideTransFork(Token $token): bool
@@ -137,5 +150,63 @@ final class TransTokenParser extends AbstractTokenParser
     public function getTag(): string
     {
         return 'trans';
+    }
+
+    /**
+     * The twig translation extension expects a delimited key/id for it's rules.
+     * @see Symfony\Contracts\Translation\TranslatorInterface for more information on the format.
+     *
+     * Copied from Symfony\Component\Translation\Dumper\PoFileDumper
+     * @copyright Fabien Potencier <fabien@symfony.com>
+     *
+     * @param TextNode $body
+     * @return TextNode[]
+     */
+    private function parsePluralisation(TextNode $body): array
+    {
+        $msg = $body->getAttribute('data');
+
+        // Partly copied from TranslatorTrait::trans.
+        $parts = [];
+        if (preg_match('/^\|++$/', $msg)) {
+            $parts = explode('|', $msg);
+        } elseif (preg_match_all('/(?:\|\||[^\|])++/', $msg, $matches)) {
+            $parts = $matches[0];
+        }
+
+        $intervalRegexp = <<<'EOF'
+/^(?P<interval>
+    ({\s*
+        (\-?\d+(\.\d+)?[\s*,\s*\-?\d+(\.\d+)?]*)
+    \s*})
+        |
+    (?P<left_delimiter>[\[\]])
+        \s*
+        (?P<left>-Inf|\-?\d+(\.\d+)?)
+        \s*,\s*
+        (?P<right>\+?Inf|\-?\d+(\.\d+)?)
+        \s*
+    (?P<right_delimiter>[\[\]])
+)\s*(?P<message>.*?)$/xs
+EOF;
+
+        $standardRules = [];
+        foreach ($parts as $part) {
+            $part = trim(str_replace('||', '|', $part));
+
+            if (preg_match($intervalRegexp, $part)) {
+                // Explicit rule is not a standard rule.
+                return [];
+            } else {
+                $standardRules[] = $part;
+            }
+        }
+
+        $body->setAttribute('data', $standardRules[0]);
+
+        $plural = clone $body;
+        $plural->setAttribute('data', $standardRules[1]);
+
+        return [$body, $plural];
     }
 }

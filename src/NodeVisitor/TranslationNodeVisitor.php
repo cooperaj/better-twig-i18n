@@ -72,6 +72,7 @@ final class TranslationNodeVisitor extends AbstractNodeVisitor
             // extract constant nodes with a trans filter
             $this->messages[] = [
                 $node->getNode('node')->getAttribute('value'),
+                $node->hasNode('plural') ? $node->getNode('plural')->getAttribute('data') : null,
                 $this->getReadDomainFromArguments($node->getNode('arguments'), 1),
                 null, # no notes yet.
                 null, # no context either.
@@ -81,6 +82,7 @@ final class TranslationNodeVisitor extends AbstractNodeVisitor
             // extract trans nodes
             $this->messages[] = [
                 $node->getNode('body')->getAttribute('data'),
+                $node->hasNode('plural') ? $node->getNode('plural')->getAttribute('data') : null,
                 $node->hasNode('domain') ? $this->getReadDomainFromNode($node->getNode('domain')) : null,
                 $node->hasNode('notes') ? $node->getNode('notes')->getAttribute('data') : null,
                 $node->hasNode('context') ? $node->getNode('context')->getAttribute('data') : null,
