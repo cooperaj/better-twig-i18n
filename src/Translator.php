@@ -22,6 +22,12 @@ class Translator implements TranslatorInterface
      */
     public function setLocale(string $locale): void
     {
+        // We want to *encourage* this work on a number of operating systems that apparently use
+        // different values. The setLanguage call below already does LANGUAGE.
+        putenv("LC_ALL=$locale"); // Needed on Alpine Linux as the php:7-fpm-alpine docker image.
+        putenv("LC_LANG=$locale");
+        putenv("LC_LANGUAGE=$locale");
+
         $this->getTranslator()->setLanguage($locale);
     }
 
