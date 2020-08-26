@@ -46,9 +46,12 @@ class TwigExtractor implements ExtractorInterface
      */
     public function extract(string $resource): array
     {
+        /** @var Translations[] $catalogues */
+        $catalogues = [];
+
         foreach ($this->extractFiles($resource) as $file) {
             try {
-                return $this->extractTemplateDetails(
+                $translations = $this->extractTemplateDetails(
                     file_get_contents($file->getPathname()),
                     $file->getFilename(),
                     $file->getPath()
@@ -56,7 +59,22 @@ class TwigExtractor implements ExtractorInterface
             } catch (Error $e) {
                 // ignore errors, these should be fixed by using the linter
             }
+
+            // Merge our newly discovered translations into the full catalogue set
+            array_walk(
+                $translations,
+                function (Translations $translations, string $domain) use (&$catalogues) {
+                    if (in_array($domain, array_keys($catalogues))) {
+                        $catalogues[$domain] = $catalogues[$domain]->mergeWith($translations);
+                    } else {
+                        $catalogues[$domain] = $translations;
+                    }
+                    return true;
+                }
+            );
         }
+
+        return $catalogues;
     }
 
     /**
