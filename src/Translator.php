@@ -7,9 +7,10 @@ namespace Acpr\I18n;
 use Gettext\GettextTranslator;
 use Gettext\TranslatorInterface as GettextTranslatorInterface;
 
+use function putenv;
+
 class Translator implements TranslatorInterface
 {
-    /** @var GettextTranslator|GettextTranslatorInterface */
     private GettextTranslator $translator;
 
     public function __construct(GettextTranslator $translator)
@@ -28,7 +29,7 @@ class Translator implements TranslatorInterface
         putenv("LC_LANG=$locale");
         putenv("LC_LANGUAGE=$locale");
 
-        $this->getTranslator()->setLanguage($locale);
+        $this->translator->setLanguage($locale);
     }
 
     /**
@@ -58,7 +59,7 @@ class Translator implements TranslatorInterface
             $count
         );
 
-        $translated = $this->getTranslator()->$function(...$arguments);
+        $translated = $this->translator->$function(...$arguments);
 
         return $this->replaceTokens($translated, $replacements);
     }
