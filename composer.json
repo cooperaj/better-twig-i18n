@@ -18,14 +18,21 @@
   },
   "require-dev": {
     "phpunit/phpunit": "^9.3",
-    "squizlabs/php_codesniffer": "^3.5.6"
+    "squizlabs/php_codesniffer": "^3.5.6",
+    "vimeo/psalm": "^3.0"
   },
   "autoload": {
     "psr-4": {
       "Acpr\\I18n\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "AcprTest\\I18n\\": "tests/unit/"
+    }
+  },
   "scripts": {
-    "test": "vendor/bin/phpunit"
+    "test": "vendor/bin/phpunit",
+    "static": "vendor/bin/psalm"
   }
 }
