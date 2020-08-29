@@ -11,7 +11,7 @@
          failOnWarning="true"
          verbose="true">
     <testsuites>
-        <testsuite name="default">
+        <testsuite name="Unit">
             <directory suffix="Test.php">tests</directory>
         </testsuite>
     </testsuites>
