@@ -71,7 +71,7 @@ final class TransTokenParser extends AbstractTokenParser
                 );
             } elseif (!$stream->test(Token::BLOCK_END_TYPE)) {
                 throw new SyntaxError(
-                    'Unexpected token. Twig was looking for the "with", or "from" keyword.',
+                    'Unexpected token. Twig was looking for the "with", "count" or "from" keyword.',
                     $stream->getCurrent()->getLine(),
                     $stream->getSourceContext()
                 );

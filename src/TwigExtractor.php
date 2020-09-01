@@ -15,11 +15,9 @@ namespace Acpr\I18n;
 
 use Gettext\Translation;
 use Gettext\Translations;
-use InvalidArgumentException;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
 use Twig\Environment;
-use Twig\Error\Error;
 use Twig\Source;
 
 /**
@@ -50,15 +48,11 @@ class TwigExtractor implements ExtractorInterface
         $catalogues = [];
 
         foreach ($this->extractFiles($resource) as $file) {
-            try {
-                $translations = $this->extractTemplateDetails(
-                    file_get_contents($file->getPathname()),
-                    $file->getFilename(),
-                    $file->getPath()
-                );
-            } catch (Error $e) {
-                // ignore errors, these should be fixed by using the linter
-            }
+            $translations = $this->extractTemplateDetails(
+                file_get_contents($file->getPathname()),
+                $file->getFilename(),
+                $file->getPath()
+            );
 
             // Merge our newly discovered translations into the full catalogue set
             array_walk(
@@ -138,14 +132,7 @@ class TwigExtractor implements ExtractorInterface
      */
     protected function extractFiles($resource)
     {
-        if (is_iterable($resource)) {
-            $files = [];
-            foreach ($resource as $file) {
-                if ($this->canBeExtracted($file)) {
-                    $files[] = $this->toSplFileInfo($file);
-                }
-            }
-        } elseif (is_file($resource)) {
+        if (is_file($resource)) {
             $files = $this->canBeExtracted($resource) ? [$this->toSplFileInfo($resource)] : [];
         } else {
             $files = $this->extractFromDirectory($resource);
@@ -168,24 +155,10 @@ class TwigExtractor implements ExtractorInterface
     /**
      * @param string $file
      * @return bool
-     * @throws InvalidArgumentException
-     */
-    protected function isFile(string $file)
-    {
-        if (!is_file($file)) {
-            throw new InvalidArgumentException(sprintf('The "%s" file does not exist.', $file));
-        }
-
-        return true;
-    }
-
-    /**
-     * @param string $file
-     * @return bool
      */
     protected function canBeExtracted(string $file): bool
     {
-        return $this->isFile($file) && 'twig' === pathinfo($file, PATHINFO_EXTENSION);
+        return 'twig' === pathinfo($file, PATHINFO_EXTENSION);
     }
 
     /**
