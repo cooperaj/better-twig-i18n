@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AcprTest\I18n;
+namespace AcprUnit\I18n;
 
 use Acpr\I18n\Translator;
 use Gettext\GettextTranslator as GettextTranslator;
