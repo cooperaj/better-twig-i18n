@@ -23,4 +23,38 @@ $translator = new Translator($gettextTranslator);
 $translation = new TranslationExtension($translator);
 $twig->addExtension($translation);
 
-echo $twig->render('home.html.twig');
+// Do translation in PHP of various strings
+$phpTitle = $translator->translate('PHP Extracted');
+$translatedVariable = $translator->translate(
+    'A quick test of a "%variable%"',
+    [
+        '%variable%' => $translator->translate('translated variable')
+    ]
+);
+$pluralApples = $translator->translate(
+    'I have an apple',
+    [
+        '%count%' => 3
+    ],
+    null,
+    null,
+    'I have %count% apples',
+    3
+);
+$withContext = $translator->translate('A test page', [], null, 'Within a list');
+$errorDomain = $translator->translate('This is an error', [], 'errors');
+$languageByContext = $translator->translate('This should be in english', [], null, 'Leave as english');
+$missingVariable = $translator->translate('A quick test of a "%missing%" variable', []);
+
+echo $twig->render(
+    'home.html.twig',
+    [
+        'php_title' => $phpTitle,
+        'translated_variable' => $translatedVariable,
+        'plural_apples' => $pluralApples,
+        'with_context' => $withContext,
+        'error_domain' => $errorDomain,
+        'language_by_context' => $languageByContext,
+        'missing_variable' => $missingVariable
+    ]
+);
