@@ -133,4 +133,26 @@ class TranslatorTest extends TestCase
 
         $this->assertEquals('string with tokens', $string);
     }
+
+    /**
+     * @test
+     */
+    public function createsMissingCountToken()
+    {
+        $gettextTranslator = $this->createStub(GettextTranslator::class);
+        $gettextTranslator->method('ngettext')->willReturn('string with %count%');
+
+        $sut = new Translator($gettextTranslator);
+
+        $string = $sut->translate(
+            'string to translate',
+            [], // no count token supplied
+            null,
+            null,
+            'string with %count',
+            3
+        );
+
+        $this->assertEquals('string with 3', $string);
+    }
 }

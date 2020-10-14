@@ -61,6 +61,10 @@ class Translator implements TranslatorInterface
 
         $translated = $this->translator->$function(...$arguments);
 
+        if (null !== $count) {
+            $replacements['%count%'] = $count;
+        }
+
         return $this->replaceTokens($translated, $replacements);
     }
 

@@ -85,10 +85,6 @@ class TranslationExtension extends AbstractExtension
         ?string $plural = null,
         ?int $count = null
     ): string {
-        if (null !== $count) {
-            $arguments['%count%'] = $count;
-        }
-
         return $this->getTranslator()->translate(
             $message,
             $replacements,
