@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace Acpr\I18n;
 
+use Acpr\I18n\NodeVisitor\PhpParserNodeVisitor;
+use Gettext\Translation;
 use Gettext\Translations;
+use PhpParser\Error;
+use PhpParser\NodeTraverser;
+use PhpParser\ParserFactory;
 
 class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
 {
@@ -51,11 +56,51 @@ class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
         return $catalogues;
     }
 
-    private function extractPhpFile(string $file, string $getFilename, string $getPath): array
+    /**
+     * @param string $contents The contents of the PHP file
+     * @param string $filename
+     * @param string $path
+     * @return array A translation catalague containing domain keyed translations
+     * @throws Error Parsing of the PHP file has failed
+     */
+    private function extractPhpFile(string $contents, string $filename, string $path): array
     {
-        $catalogue = [];
+        /** @var Translations[] $translations */
+        $translations = [];
 
-        return $catalogue;
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $visitor = new PhpParserNodeVisitor();
+
+        $traverser = new NodeTraverser;
+        $traverser->addVisitor($visitor);
+        $traverser->traverse($parser->parse($contents));
+
+        foreach ($visitor->getMessages() as $message) {
+            $key = trim($message[0]);
+
+            $domain = $message[2] ?: $this->defaultDomain;
+
+            $translations[$domain] = $catalogue = $translations[$domain] ?? Translations::create($domain);
+
+            $translation = Translation::create($message[4], $key);
+
+            if ($message[1] !== null) {
+                $translation->setPlural($message[1]);
+            }
+
+            $translation->getReferences()->add(
+                $path . '/' . $filename,
+                $message[5]
+            );
+
+            if ($message[3] !== null) {
+                $translation->getExtractedComments()->add($message[3]);
+            }
+
+            $catalogue->add($translation);
+        }
+
+        return $translations;
     }
 
     /**
