@@ -57,7 +57,7 @@ You could have a PHP file
 ```php
 /** @var $translator \Acpr\I18n\Translator **/
 $pluralApples = $translator->translate(
-    'I have an apple',
+    '%name% has %count% apple',
     [
         '%name' => 'Adam'
     ],
@@ -82,6 +82,7 @@ msgstr[0] ""
 ##### Limitations
  * The extraction specifically looks for usages of a `translate` function with the correct signature. This may result in 
    false positives dependent on your code base.
+ * It is not currently possible to add notes/comments to a translation entry.
  * For the correct values to be parsed, the string arguments to the `translate` function **must** be inlined strings 
    (quoted or heredoc). It is **not** possible to use variables. 
    
