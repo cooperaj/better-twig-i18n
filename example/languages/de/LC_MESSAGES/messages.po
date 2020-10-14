@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-26T09:41:09+00:00\n"
+"POT-Creation-Date: 2020-10-14T10:50:05+00:00\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -22,55 +22,63 @@ msgctxt "Page title"
 msgid "A test page"
 msgstr "Eine Testseite (Title)"
 
-#: templates/home.html.twig:9
+#: templates/home.html.twig:8
+msgid "Twig Extracted"
+msgstr "Twig extrahiert"
+
+#: templates/home.html.twig:10 index.php:31
 msgid "translated variable"
 msgstr "übersetzte Variable"
 
-#: templates/home.html.twig:10
+#: templates/home.html.twig:33
 msgid "Test of a translated variable"
 msgstr "Test einer übersetzten Variablen"
 
-#: templates/home.html.twig:11
+#: templates/home.html.twig:12 index.php:28
 msgid "A quick test of a \"%variable%\""
 msgstr "Ein Schnelltest einer \"%variable%\""
 
-#: templates/home.html.twig:13
+#: templates/home.html.twig:36
 msgid "Test of a plural statement"
 msgstr "Test einer Pluralanweisung"
 
 #. A simple plural count of apples
-#: templates/home.html.twig:14
+#: templates/home.html.twig:15 index.php:34
 msgid "I have an apple"
 msgid_plural "I have %count% apples"
 msgstr[0] "Ich habe einen Apfel"
 msgstr[1] "Ich habe %count% Apfel"
 
-#: templates/home.html.twig:16
+#: templates/home.html.twig:39
 msgid "Test of a second context"
 msgstr "Test eines zweiten Kontexts"
 
-#: templates/home.html.twig:17
+#: templates/home.html.twig:18 index.php:44
 msgctxt "Within a list"
 msgid "A test page"
 msgstr "Eine Testseite (List)"
 
-#: templates/home.html.twig:19
+#: templates/home.html.twig:42
 msgid "Test of a manual domain"
 msgstr "Test einer manuellen Domäne"
 
-#: templates/home.html.twig:22
+#: templates/home.html.twig:45
 msgid "Test of a language choice (en_GB)"
 msgstr "Test einer Sprachwahl (en_GB)"
 
-#: templates/home.html.twig:23
+#: templates/home.html.twig:24 index.php:46
 msgctxt "Leave as english"
 msgid "This should be in english"
 msgstr "This should be in English"
 
-#: templates/home.html.twig:25
+#: templates/home.html.twig:48
 msgid "Test of a missing placeholder"
 msgstr "Test eines fehlenden Platzhalters"
 
-#: templates/home.html.twig:26
+#: templates/home.html.twig:27 index.php:47
 msgid "A quick test of a \"%missing%\" variable"
 msgstr "Ein Schnelltest einer Variable \"%missing%\""
+
+#: index.php:27
+msgid "PHP Extracted"
+msgstr "PHP extrahiert"

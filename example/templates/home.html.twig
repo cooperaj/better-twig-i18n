@@ -5,6 +5,7 @@
 <body>
     <h1>{% trans %}A test page{% context %}Page title{% endtrans %}</h1>
 
+    <h2>{% trans %}Twig Extracted{% endtrans %}</h2>
     <dl>
         {% set var = 'translated variable' | trans -%}
         <dt>{% trans %}Test of a translated variable{% endtrans %}</dt>
@@ -24,6 +25,28 @@
 
         <dt>{% trans %}Test of a missing placeholder{% endtrans %}</dt>
         <dd>{% trans %}A quick test of a "%missing%" variable{% endtrans %}</dd>
+    </dl>
+
+    <h2>{{ php_title }}</h2>
+    <dl>
+        <!-- For convenience am leaving the dt's as twig -->
+        <dt>{% trans %}Test of a translated variable{% endtrans %}</dt>
+        <dd>{{ translated_variable }}</dd>
+
+        <dt>{% trans %}Test of a plural statement{% endtrans %}</dt>
+        <dd>{{ plural_apples }}</dd>
+
+        <dt>{% trans %}Test of a second context{% endtrans %}</dt>
+        <dd>{{ with_context }}</dd>
+
+        <dt>{% trans %}Test of a manual domain{% endtrans %}</dt>
+        <dd>{{ error_domain }}</dd>
+
+        <dt>{% trans %}Test of a language choice (en_GB){% endtrans %}</dt>
+        <dd>{{ language_by_context }}</dd>
+
+        <dt>{% trans %}Test of a missing placeholder{% endtrans %}</dt>
+        <dd>{{ missing_variable }}</dd>
     </dl>
 </body>
 </html>

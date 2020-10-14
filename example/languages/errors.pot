@@ -1,9 +1,10 @@
 msgid ""
 msgstr ""
 "Language: en_GB\n"
-"POT-Creation-Date: 2020-08-26T11:06:25+00:00\n"
+"POT-Creation-Date: 2020-10-14T10:50:05+00:00\n"
 "X-Domain: errors\n"
 
-#: templates/home.html.twig:20
+#: templates/home.html.twig:21
+#: ./index.php:45
 msgid "This is an error"
 msgstr ""

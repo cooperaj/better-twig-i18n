@@ -1,41 +1,26 @@
 <?php
 
-/*
- * This file based on one originally part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 declare(strict_types=1);
 
 namespace Acpr\I18n;
 
+use Acpr\I18n\NodeVisitor\PhpParserNodeVisitor;
 use Gettext\Translation;
 use Gettext\Translations;
-use Twig\Environment;
-use Twig\Source;
+use PhpParser\Error;
+use PhpParser\NodeTraverser;
+use PhpParser\ParserFactory;
 
-/**
- * ExtendedTwigExtractor extracts translation messages from a twig template.
- *
- * Implements additional functionality beyond the standard extractor with the addition of message
- * context and comments/notes.
- */
-class TwigExtractor extends AbstractFileExtractor implements ExtractorInterface
+class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
 {
-    protected const EXTENSION = 'twig';
+    protected const EXTENSION = 'php';
 
     protected const DEFAULT_DOMAIN = 'messages';
     private string $defaultDomain;
 
-    protected Environment $twig;
 
-    public function __construct(Environment $twig, string $defaultDomain = self::DEFAULT_DOMAIN)
+    public function __construct(string $defaultDomain = self::DEFAULT_DOMAIN)
     {
-        $this->twig = $twig;
         $this->defaultDomain = $defaultDomain;
     }
 
@@ -48,7 +33,7 @@ class TwigExtractor extends AbstractFileExtractor implements ExtractorInterface
         $catalogues = [];
 
         foreach ($this->extractFiles($resource) as $file) {
-            $translations = $this->extractTemplateDetails(
+            $translations = $this->extractPhpFile(
                 file_get_contents($file->getPathname()),
                 $file->getFilename(),
                 $file->getPath()
@@ -72,27 +57,23 @@ class TwigExtractor extends AbstractFileExtractor implements ExtractorInterface
     }
 
     /**
-     * Parses a twig template for translation extension usages and extracts the text.
-     *
-     * @param string $template The contents of a template file
-     * @param string $name The name of the template file
-     * @param string $path The path to the template file
-     * @return Translations[] An array of {@link Translations::class} keyed on translation domains
-     * @throws \Twig\Error\SyntaxError
+     * @param string $contents The contents of the PHP file
+     * @param string $filename
+     * @param string $path
+     * @return array A translation catalague containing domain keyed translations
+     * @throws Error Parsing of the PHP file has failed
      */
-    protected function extractTemplateDetails(
-        string $template,
-        string $name,
-        string $path
-    ): array {
+    private function extractPhpFile(string $contents, string $filename, string $path): array
+    {
         /** @var Translations[] $translations */
         $translations = [];
 
-        $visitor = $this->twig->getExtension('Acpr\I18n\TranslationExtension')
-            ->getTranslationNodeVisitor();
-        $visitor->enable();
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $visitor = new PhpParserNodeVisitor();
 
-        $parser = $this->twig->parse($this->twig->tokenize(new Source($template, $name, $path)));
+        $traverser = new NodeTraverser;
+        $traverser->addVisitor($visitor);
+        $traverser->traverse($parser->parse($contents));
 
         foreach ($visitor->getMessages() as $message) {
             $key = trim($message[0]);
@@ -108,7 +89,7 @@ class TwigExtractor extends AbstractFileExtractor implements ExtractorInterface
             }
 
             $translation->getReferences()->add(
-                $parser->getSourceContext()->getPath() . '/' . $parser->getSourceContext()->getName(),
+                $path . '/' . $filename,
                 $message[5]
             );
 
@@ -118,8 +99,6 @@ class TwigExtractor extends AbstractFileExtractor implements ExtractorInterface
 
             $catalogue->add($translation);
         }
-
-        $visitor->disable();
 
         return $translations;
     }
