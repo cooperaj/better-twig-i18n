@@ -63,7 +63,7 @@ $pluralApples = $translator->translate(
     ],
     'errors',
     'Some context to the translation',
-    'I have %count% apples',
+    '%name% has %count% apples',
     5
 );
 
