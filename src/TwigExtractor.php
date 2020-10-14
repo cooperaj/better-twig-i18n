@@ -15,8 +15,6 @@ namespace Acpr\I18n;
 
 use Gettext\Translation;
 use Gettext\Translations;
-use SplFileInfo;
-use Symfony\Component\Finder\Finder;
 use Twig\Environment;
 use Twig\Source;
 
@@ -26,8 +24,10 @@ use Twig\Source;
  * Implements additional functionality beyond the standard extractor with the addition of message
  * context and comments/notes.
  */
-class TwigExtractor implements ExtractorInterface
+class TwigExtractor extends AbstractFileExtractor implements ExtractorInterface
 {
+    protected const EXTENSION = 'twig';
+
     protected const DEFAULT_DOMAIN = 'messages';
     private string $defaultDomain;
 
@@ -125,50 +125,10 @@ class TwigExtractor implements ExtractorInterface
     }
 
     /**
-     * Pulls a list of twig file info objects from a supplied filename, iterable list of filenames or directory name
-     *
-     * @param $resource
-     * @return array|SplFileInfo[]|Finder
+     * @inheritDoc
      */
-    protected function extractFiles($resource)
+    public function getExtension(): string
     {
-        if (is_file($resource)) {
-            $files = $this->canBeExtracted($resource) ? [$this->toSplFileInfo($resource)] : [];
-        } else {
-            $files = $this->extractFromDirectory($resource);
-        }
-
-        return $files;
-    }
-
-    /**
-     * Given a filepath will return an object containing information about that file.
-     *
-     * @param string $file
-     * @return SplFileInfo
-     */
-    protected function toSplFileInfo(string $file): SplFileInfo
-    {
-        return new SplFileInfo($file);
-    }
-
-    /**
-     * @param string $file
-     * @return bool
-     */
-    protected function canBeExtracted(string $file): bool
-    {
-        return 'twig' === pathinfo($file, PATHINFO_EXTENSION);
-    }
-
-    /**
-     * @param $directory
-     * @return Finder
-     */
-    protected function extractFromDirectory($directory)
-    {
-        $finder = new Finder();
-
-        return $finder->files()->name('*.twig')->in($directory);
+        return self::EXTENSION;
     }
 }
