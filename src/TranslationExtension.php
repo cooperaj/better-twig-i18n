@@ -67,12 +67,7 @@ class TranslationExtension extends AbstractExtension
      */
     public function getNodeVisitors(): array
     {
-        return [$this->getTranslationNodeVisitor()];
-    }
-
-    public function getTranslationNodeVisitor(): NodeVisitorInterface
-    {
-        return $this->translationNodeVisitor ?: $this->translationNodeVisitor = new TranslationNodeVisitor();
+        return [$this->nodeVisitor];
     }
 
     public function trans(

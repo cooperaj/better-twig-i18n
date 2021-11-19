@@ -18,7 +18,6 @@ use Twig\Environment;
 use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Expression\FilterExpression;
 use Twig\Node\Node;
-use Twig\NodeVisitor\AbstractNodeVisitor;
 
 /**
  * TranslationNodeVisitor extracts translation messages.
@@ -31,9 +30,9 @@ use Twig\NodeVisitor\AbstractNodeVisitor;
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Adam Cooper <adam@acpr.dev>
  */
-final class TranslationNodeVisitor extends AbstractNodeVisitor
+final class TranslationNodeVisitor extends AbstractTranslationNodeVisitor
 {
-    const UNDEFINED_DOMAIN = '_undefined';
+    public const UNDEFINED_DOMAIN = '_undefined';
 
     private bool $enabled = false;
     private array $messages = [];
@@ -67,7 +66,7 @@ final class TranslationNodeVisitor extends AbstractNodeVisitor
     /**
      * {@inheritdoc}
      */
-    protected function doEnterNode(Node $node, Environment $env): Node
+    public function enterNode(Node $node, Environment $env): Node
     {
         if (!$this->enabled) {
             return $node;
@@ -105,7 +104,7 @@ final class TranslationNodeVisitor extends AbstractNodeVisitor
     /**
      * {@inheritdoc}
      */
-    protected function doLeaveNode(Node $node, Environment $env): ?Node
+    public function leaveNode(Node $node, Environment $env): ?Node
     {
         return $node;
     }
