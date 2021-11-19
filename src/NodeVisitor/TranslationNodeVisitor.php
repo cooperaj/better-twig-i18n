@@ -38,18 +38,27 @@ final class TranslationNodeVisitor extends AbstractNodeVisitor
     private bool $enabled = false;
     private array $messages = [];
 
+    /**
+     * {@inheritdoc}
+     */
     public function enable(): void
     {
         $this->enabled = true;
         $this->messages = [];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function disable(): void
     {
         $this->enabled = false;
         $this->messages = [];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getMessages(): array
     {
         return $this->messages;

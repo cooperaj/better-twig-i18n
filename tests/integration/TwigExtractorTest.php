@@ -67,9 +67,7 @@ class TwigExtractorTest extends TestCase
         $this->assertEquals('My Title', $translation->getOriginal());
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function extractsADirectoryOfTwigFiles(): void
     {
         $vfs = vfsStream::setup(
@@ -101,9 +99,7 @@ class TwigExtractorTest extends TestCase
         $this->assertEquals('About', $translation->getOriginal());
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function mergesTranslationsAcrossFiles(): void
     {
         $vfs = vfsStream::setup(
@@ -131,7 +127,7 @@ class TwigExtractorTest extends TestCase
         $this->assertArrayHasKey('vfs://root/home.html.twig', $translation->getReferences()->toArray());
         $this->assertArrayHasKey('vfs://root/about.html.twig', $translation->getReferences()->toArray());
     }
-    
+
     /** @test */
     public function handlesParametersWithoutError(): void
     {

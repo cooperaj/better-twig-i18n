@@ -25,7 +25,8 @@ class PhpParserNodeVisitor extends NodeVisitorAbstract
 
     public function leaveNode(Node $node)
     {
-        if ($node instanceof MethodCall
+        if (
+            $node instanceof MethodCall
             && $node->name->toString() === 'translate'
             && count($node->args) > 0
             && $node->args[0]->value instanceof Node\Scalar\String_
