@@ -19,7 +19,7 @@ $gettextTranslator->loadDomain('messages', 'languages');
 $gettextTranslator->loadDomain('errors', 'languages', false);
 $translator = new Translator($gettextTranslator);
 
-// Make the translation extension and and it to twig
+// Make the translation extension and add it to twig
 $translation = new TranslationExtension($translator);
 $twig->addExtension($translation);
 
