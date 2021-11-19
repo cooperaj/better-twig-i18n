@@ -46,14 +46,14 @@ class Translator implements TranslatorInterface
         ?string $domain = null,
         ?string $context = null,
         ?string $plural = null,
-        ?int $count = null
+        ?int $count = null,
     ): string {
         [$function, $arguments] = $this->parseTranslationFunction(
-            $domain,
-            $context,
-            $original,
-            $plural,
-            $count
+            domain: $domain,
+            context: $context,
+            original: $original,
+            plural: $plural,
+            count: $count,
         );
 
         $translated = $this->translator->$function(...$arguments);
@@ -70,7 +70,7 @@ class Translator implements TranslatorInterface
         ?string $context,
         string $original,
         ?string $plural,
-        ?int $count
+        ?int $count,
     ): array {
 
         $functionName = sprintf(

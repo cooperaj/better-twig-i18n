@@ -76,15 +76,15 @@ class TranslationExtension extends AbstractExtension
         ?string $domain = null,
         ?string $context = null,
         ?string $plural = null,
-        ?int $count = null
+        ?int $count = null,
     ): string {
         return $this->getTranslator()->translate(
-            $message,
-            $replacements,
-            $domain,
-            $context,
-            $plural,
-            $count
+            original: $message,
+            replacements: $replacements,
+            domain: $domain,
+            context: $context,
+            plural: $plural,
+            count: $count,
         );
     }
 }
