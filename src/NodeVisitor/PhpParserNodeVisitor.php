@@ -9,7 +9,7 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\NodeVisitorAbstract;
 
-class PhpParserNodeVisitor extends NodeVisitorAbstract
+final class PhpParserNodeVisitor extends NodeVisitorAbstract
 {
     private array $messages;
 
