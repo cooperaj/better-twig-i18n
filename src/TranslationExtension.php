@@ -27,15 +27,13 @@ use Twig\TwigFilter;
  */
 class TranslationExtension extends AbstractExtension
 {
-    private TranslatorInterface $translator;
-    private ?NodeVisitorInterface $translationNodeVisitor;
+    private NodeVisitorInterface $nodeVisitor;
 
     public function __construct(
-        TranslatorInterface $translator,
-        NodeVisitorInterface $translationNodeVisitor = null
+        private TranslatorInterface $translator,
+        ?NodeVisitorInterface $translationNodeVisitor = null,
     ) {
-        $this->translator = $translator;
-        $this->translationNodeVisitor = $translationNodeVisitor;
+        $this->nodeVisitor = $translationNodeVisitor ?? new TranslationNodeVisitor();
     }
 
     public function getTranslator(): TranslatorInterface

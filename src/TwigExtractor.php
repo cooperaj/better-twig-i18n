@@ -27,16 +27,12 @@ use Twig\Source;
 class TwigExtractor extends AbstractFileExtractor implements ExtractorInterface
 {
     protected const EXTENSION = 'twig';
-
     protected const DEFAULT_DOMAIN = 'messages';
-    private string $defaultDomain;
 
-    protected Environment $twig;
-
-    public function __construct(Environment $twig, string $defaultDomain = self::DEFAULT_DOMAIN)
-    {
-        $this->twig = $twig;
-        $this->defaultDomain = $defaultDomain;
+    public function __construct(
+        protected Environment $twig,
+        private string $defaultDomain = self::DEFAULT_DOMAIN,
+    ) {
     }
 
     /**

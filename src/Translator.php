@@ -11,11 +11,8 @@ use function putenv;
 
 class Translator implements TranslatorInterface
 {
-    private GettextTranslator $translator;
-
-    public function __construct(GettextTranslator $translator)
+    public function __construct(private GettextTranslator $translator)
     {
-        $this->translator = $translator;
     }
 
     /**

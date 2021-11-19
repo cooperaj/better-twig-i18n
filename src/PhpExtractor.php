@@ -16,12 +16,9 @@ class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
     protected const EXTENSION = 'php';
 
     protected const DEFAULT_DOMAIN = 'messages';
-    private string $defaultDomain;
 
-
-    public function __construct(string $defaultDomain = self::DEFAULT_DOMAIN)
+    public function __construct(private string $defaultDomain = self::DEFAULT_DOMAIN)
     {
-        $this->defaultDomain = $defaultDomain;
     }
 
     /**
