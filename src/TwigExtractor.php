@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Acpr\I18n;
 
+use Acpr\I18n\NodeVisitor\AbstractTranslationNodeVisitor;
 use Gettext\Translation;
 use Gettext\Translations;
 use Twig\Environment;
@@ -79,43 +80,49 @@ class TwigExtractor extends AbstractFileExtractor implements ExtractorInterface
     protected function extractTemplateDetails(
         string $template,
         string $name,
-        string $path
+        string $path,
     ): array {
         /** @var Translations[] $translations */
         $translations = [];
 
-        $visitor = $this->twig->getExtension('Acpr\I18n\TranslationExtension')
-            ->getTranslationNodeVisitor();
-        $visitor->enable();
+        /** @var TranslationExtension $extension */
+        $extension = $this->twig->getExtension('Acpr\I18n\TranslationExtension');
+        $visitor = $extension->getNodeVisitors()[0];
+
+        if ($visitor instanceof AbstractTranslationNodeVisitor) {
+            $visitor->enable();
+        }
 
         $parser = $this->twig->parse($this->twig->tokenize(new Source($template, $name, $path)));
 
         foreach ($visitor->getMessages() as $message) {
-            $key = trim($message[0]);
+            $key = trim($message->original);
 
-            $domain = $message[2] ?: $this->defaultDomain;
+            $domain = $message->domain ?: $this->defaultDomain;
 
             $translations[$domain] = $catalogue = $translations[$domain] ?? Translations::create($domain);
 
-            $translation = Translation::create($message[4], $key);
+            $translation = Translation::create($message->context, $key);
 
-            if ($message[1] !== null) {
-                $translation->setPlural($message[1]);
+            if ($message->plural !== null) {
+                $translation->setPlural($message->plural);
             }
 
             $translation->getReferences()->add(
-                $parser->getSourceContext()->getPath() . '/' . $parser->getSourceContext()->getName(),
-                $message[5]
+                $parser->getSourceContext()?->getPath() . '/' . $parser->getSourceContext()?->getName(),
+                $message->line
             );
 
-            if ($message[3] !== null) {
-                $translation->getExtractedComments()->add($message[3]);
+            if ($message->notes !== null) {
+                $translation->getExtractedComments()->add($message->notes);
             }
 
             $catalogue->add($translation);
         }
 
-        $visitor->disable();
+        if ($visitor instanceof AbstractTranslationNodeVisitor) {
+            $visitor->disable();
+        }
 
         return $translations;
     }

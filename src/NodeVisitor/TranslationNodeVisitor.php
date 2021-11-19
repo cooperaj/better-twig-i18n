@@ -77,25 +77,35 @@ final class TranslationNodeVisitor extends AbstractTranslationNodeVisitor
             'trans' === $node->getNode('filter')->getAttribute('value') &&
             $node->getNode('node') instanceof ConstantExpression
         ) {
+            $arguments = $node->hasNode('arguments') ? $node->getNode('arguments') : null;
+
             // extract constant nodes with a trans filter
-            $this->messages[] = [
-                $node->getNode('node')->getAttribute('value'),
-                $node->hasNode('plural') ? $node->getNode('plural')->getAttribute('data') : null,
-                $this->getReadDomainFromArguments($node->getNode('arguments'), 1),
-                null, # no notes yet.
-                null, # no context either.
-                $node->getTemplateLine()
-            ];
+            $this->messages[] = new Message(
+                original: $node->getNode('node')->getAttribute('value'),
+                line:     $node->getTemplateLine(),
+                plural:   $arguments?->hasNode('3')
+                              ? $arguments->getNode('3')->getAttribute('value')
+                              : null,
+                domain:   $this->getReadDomainFromArguments($node->getNode('arguments'), 1),
+            );
         } elseif ($node instanceof TransNode) {
             // extract trans nodes
-            $this->messages[] = [
-                $node->getNode('body')->getAttribute('data'),
-                $node->hasNode('plural') ? $node->getNode('plural')->getAttribute('data') : null,
-                $node->hasNode('domain') ? $this->getReadDomainFromNode($node->getNode('domain')) : null,
-                $node->hasNode('notes') ? $node->getNode('notes')->getAttribute('data') : null,
-                $node->hasNode('context') ? $node->getNode('context')->getAttribute('data') : null,
-                $node->getTemplateLine()
-            ];
+            $this->messages[] = new Message(
+                original: $node->getNode('body')->getAttribute('data'),
+                line:     $node->getTemplateLine(),
+                plural:   $node->hasNode('plural')
+                              ? $node->getNode('plural')->getAttribute('data')
+                              : null,
+                domain:   $node->hasNode('domain')
+                              ? $this->getReadDomainFromNode($node->getNode('domain'))
+                              : null,
+                notes:    $node->hasNode('notes')
+                              ? $node->getNode('notes')->getAttribute('data')
+                              : null,
+                context:  $node->hasNode('context')
+                              ? $node->getNode('context')->getAttribute('data')
+                              : null,
+            );
         }
 
         return $node;
@@ -119,15 +129,12 @@ final class TranslationNodeVisitor extends AbstractTranslationNodeVisitor
 
     private function getReadDomainFromArguments(Node $arguments, int $index): ?string
     {
-        if ($arguments->hasNode('domain')) {
-            $argument = $arguments->getNode('domain');
-        } elseif ($arguments->hasNode((string) $index)) {
+        if ($arguments->hasNode((string) $index)) {
             $argument = $arguments->getNode((string) $index);
-        } else {
-            return null;
+            return $this->getReadDomainFromNode($argument);
         }
 
-        return $this->getReadDomainFromNode($argument);
+        return null;
     }
 
     private function getReadDomainFromNode(Node $node): ?string

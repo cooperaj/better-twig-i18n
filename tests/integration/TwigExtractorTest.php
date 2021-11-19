@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace AcprIntegration\I18n;
 
-use Acpr\I18n\TranslationExtension;
-use Acpr\I18n\Translator;
 use Acpr\I18n\TwigExtractor;
-use Gettext\GettextTranslator;
 use Gettext\Translation;
 use Gettext\Translations;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-use Twig\Environment;
-use Twig\Loader\FilesystemLoader;
 
 /**
  * @covers \Acpr\I18n\TwigExtractor
@@ -22,25 +17,13 @@ use Twig\Loader\FilesystemLoader;
  * @covers \Acpr\I18n\Node\TransNode
  * @covers \Acpr\I18n\TokenParser\TransTokenParser
  * @covers \Acpr\I18n\NodeVisitor\TranslationNodeVisitor
+ * @covers \Acpr\I18n\NodeVisitor\Message
  */
 class TwigExtractorTest extends TestCase
 {
-    public function createTwigEnvironment(array $viewPaths): Environment
-    {
-        $loader = new FilesystemLoader($viewPaths);
+    use TwigEnvironmentTrait;
 
-        $gettextTranslator = new GettextTranslator('de_DE');
-        $translator = new Translator($gettextTranslator);
-
-        $environment = new Environment($loader);
-        $environment->addExtension(new TranslationExtension($translator));
-
-        return $environment;
-    }
-
-    /**
-     * @test
-     */
+    /** @test */
     public function extractsASingleTwigFile(): void
     {
         $vfs = vfsStream::setup(
@@ -302,5 +285,32 @@ class TwigExtractorTest extends TestCase
         $translation = $catalogues['messages']->getTranslations()["\004My Title"];
         $references = $translation->getReferences()->toArray();
         $this->assertArrayHasKey('vfs://root/home.html.twig', $references);
+    }
+
+    /** @test */
+    public function handlesTranslationAsAFilter(): void
+    {
+        $vfs = vfsStream::setup(
+            'root',
+            null,
+            [
+                'home.html.twig' => '<h1>{{ "My Title" | trans }} - ' .
+                    '{{ "%count% day" | trans([], null, null, "%count% days", 1) }}</h1>'
+            ]
+        );
+
+        $twig = $this->createTwigEnvironment([$vfs->url()]);
+
+        $sut = new TwigExtractor($twig);
+
+        $catalogues = $sut->extract($vfs->getChild('home.html.twig')->url());
+
+        /** @var Translation $translation */
+        $translation = $catalogues['messages']->getTranslations()["\004My Title"];
+        $this->assertEquals('My Title', $translation->getOriginal());
+
+        // Also handles plurals
+        $translation = $catalogues['messages']->getTranslations()["\004%count% day"];
+        $this->assertEquals('%count% days', $translation->getPlural());
     }
 }
