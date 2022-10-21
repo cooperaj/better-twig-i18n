@@ -23,6 +23,12 @@ jobs:
           tools: composer
           coverage: xdebug
 
+      - name: Setup problem matchers for PHP
+        run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+
+      - name: Setup problem matchers for PHPUnit
+        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
       - uses: actions/checkout@v2
 
       - name: Validate composer.json and composer.lock
@@ -43,6 +49,9 @@ jobs:
 
       - name: Run test suite
         run: composer run-script test -- --coverage-clover build/coverage.xml
+
+      - name: Run static analysis
+        run: composer run-script static -- --output-format=github
 
       - uses: codecov/codecov-action@v1
         with:
