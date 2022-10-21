@@ -11,30 +11,41 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        php-versions: [ '8.1' ]
+
     steps:
-    - uses: actions/checkout@v2
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          tools: composer
+          coverage: xdebug
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate
+      - uses: actions/checkout@v2
 
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v2
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
+      - name: Validate composer.json and composer.lock
+        run: composer validate
 
-    - name: Install dependencies
-      if: steps.composer-cache.outputs.cache-hit != 'true'
-      run: composer install --prefer-dist --no-progress --no-suggest
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
 
-    - name: Run test suite
-      run: composer run-script test -- --coverage-clover build/coverage.xml
+      - name: Install dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer install --prefer-dist --no-progress
 
-    - uses: codecov/codecov-action@v1
-      with:
-        file: ./build/coverage.xml
-        flags: unit,integration
-        fail_ci_if_error: true
+      - name: Run test suite
+        run: composer run-script test -- --coverage-clover build/coverage.xml
+
+      - uses: codecov/codecov-action@v1
+        with:
+          file: ./build/coverage.xml
+          flags: unit,integration
+          fail_ci_if_error: true
