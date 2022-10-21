@@ -1,0 +1,10 @@
+--TEST--
+with plural definition
+--TEMPLATE--
+<h2>in {{ "%count% day" | trans([], null, null, "%count% days", 1) }}</h2>
+<h2>in {{ "%count% day" | trans([], null, null, "%count% days", 0) }}</h2>
+--DATA--
+return []
+--EXPECT--
+<h2>in 1 day</h2>
+<h2>in 0 days</h2>

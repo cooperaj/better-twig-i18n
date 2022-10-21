@@ -1,0 +1,10 @@
+--TEST--
+a complex example
+--TEMPLATE--
+<p>{% trans count 3 with {'%name%': name} %}
+  %name% has an apple|%name% has %count% apples{% context %}apples{% notes %}How many apples?
+{% endtrans %}</p>
+--DATA--
+return ['name' => 'Adam']
+--EXPECT--
+<p>Adam has 3 apples</p>

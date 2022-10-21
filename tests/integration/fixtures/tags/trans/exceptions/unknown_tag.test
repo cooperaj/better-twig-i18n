@@ -1,0 +1,8 @@
+--TEST--
+An unknown tag is included in the trans call
+--TEMPLATE--
+{% trans %}A test page{% unknown %}oops{% endtrans %}
+--DATA--
+return []
+--EXCEPTION--
+Twig\Error\SyntaxError: Unexpected "unknown" tag (expecting closing tag for the "trans" tag defined near line 2) in "index.twig" at line 2.

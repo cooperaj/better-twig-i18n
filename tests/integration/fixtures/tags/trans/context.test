@@ -1,0 +1,10 @@
+--TEST--
+with context
+--TEMPLATE--
+<h1>{% trans %}A test page{% context %}Page title{% endtrans %}</h1>
+<p>{% trans %}A test page{% context %}Body{% endtrans %}</p>
+--DATA--
+return []
+--EXPECT--
+<h1>A test page</h1>
+<p>A test page</p>
