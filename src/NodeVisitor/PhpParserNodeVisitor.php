@@ -11,6 +11,7 @@ use PhpParser\NodeVisitorAbstract;
 
 final class PhpParserNodeVisitor extends NodeVisitorAbstract
 {
+    /** @var array<Message>  */
     private array $messages;
 
     public function __construct()
@@ -18,6 +19,9 @@ final class PhpParserNodeVisitor extends NodeVisitorAbstract
         $this->messages = [];
     }
 
+    /**
+     * @return array<Message>
+     */
     public function getMessages(): array
     {
         return $this->messages;
@@ -41,14 +45,16 @@ final class PhpParserNodeVisitor extends NodeVisitorAbstract
             count($args) > 0
             && $args[TranslateFunctionArgument::Message->value]->value instanceof Node\Scalar\String_
         ) {
-            $this->messages[] = [
-                $this->extractArgument($args, TranslateFunctionArgument::Message),
-                $this->extractArgument($args, TranslateFunctionArgument::Plural),
-                $this->extractArgument($args, TranslateFunctionArgument::Domain),
-                null,
-                $this->extractArgument($args, TranslateFunctionArgument::Context),
-                $node->getStartLine()
-            ];
+            /** @var string $original */
+            $original = $this->extractArgument($args, TranslateFunctionArgument::Message);
+
+            $this->messages[] = new Message(
+                original: $original,
+                line: $node->getStartLine(),
+                plural: $this->extractArgument($args, TranslateFunctionArgument::Plural),
+                domain: $this->extractArgument($args, TranslateFunctionArgument::Domain),
+                context: $this->extractArgument($args, TranslateFunctionArgument::Context),
+            );
         }
     }
 
