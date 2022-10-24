@@ -17,9 +17,7 @@ use PHPUnit\Framework\TestCase;
  */
 class PhpExtractorTest extends TestCase
 {
-    /**
-     * @test
-     */
+    /** @test */
     public function extractsASinglePhpFile(): void
     {
         $vfs = vfsStream::setup(
@@ -47,9 +45,7 @@ class PhpExtractorTest extends TestCase
         $this->assertEquals('My Title', $translation->getOriginal());
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function extractsADirectoryOfPhpFiles(): void
     {
         $vfs = vfsStream::setup(
@@ -85,9 +81,7 @@ class PhpExtractorTest extends TestCase
         $this->assertEquals('About', $translation->getOriginal());
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function mergesTranslationsAcrossFiles(): void
     {
         $vfs = vfsStream::setup(
@@ -201,9 +195,7 @@ class PhpExtractorTest extends TestCase
         $this->assertEquals('Additional context', $translation->getContext());
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function handlesPluralisation(): void
     {
         $vfs = vfsStream::setup(

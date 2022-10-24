@@ -2,39 +2,59 @@ name: Build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        php-versions: [ '8.1' ]
+
     steps:
-    - uses: actions/checkout@v2
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          tools: composer
+          coverage: xdebug
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate
+      - name: Setup problem matchers for PHP
+        run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
 
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v2
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
+      - name: Setup problem matchers for PHPUnit
+        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
-    - name: Install dependencies
-      if: steps.composer-cache.outputs.cache-hit != 'true'
-      run: composer install --prefer-dist --no-progress --no-suggest
+      - uses: actions/checkout@v2
 
-    - name: Run test suite
-      run: composer run-script test -- --coverage-clover build/coverage.xml
+      - name: Validate composer.json and composer.lock
+        run: composer validate
 
-    - uses: codecov/codecov-action@v1
-      with:
-        file: ./build/coverage.xml
-        flags: unit,integration
-        fail_ci_if_error: true
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run test suite
+        run: composer run-script test -- --coverage-clover build/coverage.xml
+
+      - name: Run static analysis
+        run: composer run-script static -- --output-format=github --shepherd
+
+      - uses: codecov/codecov-action@v1
+        with:
+          file: ./build/coverage.xml
+          flags: unit,integration
+          fail_ci_if_error: true

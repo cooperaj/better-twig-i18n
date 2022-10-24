@@ -1,0 +1,8 @@
+--TEST--
+basic usage
+--TEMPLATE--
+{% trans %}A test page{% endtrans %}
+--DATA--
+return []
+--EXPECT--
+A test page

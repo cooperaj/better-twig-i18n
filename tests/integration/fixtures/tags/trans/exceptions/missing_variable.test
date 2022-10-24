@@ -1,0 +1,8 @@
+--TEST--
+with missing variables
+--TEMPLATE--
+<h1>{% trans %}A quick test of a missing "%placeholder%"{% endtrans %}</h1>
+--DATA--
+return []
+--EXCEPTION--
+Twig\Error\RuntimeError: Variable "placeholder" does not exist in "index.twig" at line 2.

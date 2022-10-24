@@ -18,7 +18,6 @@ use Twig\Environment;
 use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Expression\FilterExpression;
 use Twig\Node\Node;
-use Twig\NodeVisitor\AbstractNodeVisitor;
 
 /**
  * TranslationNodeVisitor extracts translation messages.
@@ -27,15 +26,14 @@ use Twig\NodeVisitor\AbstractNodeVisitor;
  * in the form of template line numbers when parsing messages out of twig templates.
  *
  * Removes transchoice as a type of node that can be visited as that is old syntax.
- *
- * @author Fabien Potencier <fabien@symfony.com>
- * @author Adam Cooper <adam@acpr.dev>
  */
-final class TranslationNodeVisitor extends AbstractNodeVisitor
+final class TranslationNodeVisitor extends AbstractTranslationNodeVisitor
 {
-    const UNDEFINED_DOMAIN = '_undefined';
+    public const UNDEFINED_DOMAIN = '_undefined';
 
     private bool $enabled = false;
+
+    /** @var array<Message> */
     private array $messages = [];
 
     public function enable(): void
@@ -55,10 +53,7 @@ final class TranslationNodeVisitor extends AbstractNodeVisitor
         return $this->messages;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function doEnterNode(Node $node, Environment $env): Node
+    public function enterNode(Node $node, Environment $env): Node
     {
         if (!$this->enabled) {
             return $node;
@@ -69,63 +64,64 @@ final class TranslationNodeVisitor extends AbstractNodeVisitor
             'trans' === $node->getNode('filter')->getAttribute('value') &&
             $node->getNode('node') instanceof ConstantExpression
         ) {
+            $arguments = $node->hasNode('arguments') ? $node->getNode('arguments') : null;
+
             // extract constant nodes with a trans filter
-            $this->messages[] = [
-                $node->getNode('node')->getAttribute('value'),
-                $node->hasNode('plural') ? $node->getNode('plural')->getAttribute('data') : null,
-                $this->getReadDomainFromArguments($node->getNode('arguments'), 1),
-                null, # no notes yet.
-                null, # no context either.
-                $node->getTemplateLine()
-            ];
+            $this->messages[] = new Message(
+                original: (string) $node->getNode('node')->getAttribute('value'),
+                line:     $node->getTemplateLine(),
+                plural:   $arguments?->hasNode('3')
+                              ? (string) $arguments->getNode('3')->getAttribute('value')
+                              : null,
+                domain:   $this->getReadDomainFromArguments($node->getNode('arguments')),
+            );
         } elseif ($node instanceof TransNode) {
             // extract trans nodes
-            $this->messages[] = [
-                $node->getNode('body')->getAttribute('data'),
-                $node->hasNode('plural') ? $node->getNode('plural')->getAttribute('data') : null,
-                $node->hasNode('domain') ? $this->getReadDomainFromNode($node->getNode('domain')) : null,
-                $node->hasNode('notes') ? $node->getNode('notes')->getAttribute('data') : null,
-                $node->hasNode('context') ? $node->getNode('context')->getAttribute('data') : null,
-                $node->getTemplateLine()
-            ];
+            $this->messages[] = new Message(
+                original: (string) $node->getNode('body')->getAttribute('data'),
+                line:     $node->getTemplateLine(),
+                plural:   $node->hasNode('plural')
+                              ? (string) $node->getNode('plural')->getAttribute('data')
+                              : null,
+                domain:   $node->hasNode('domain')
+                              ? $this->getReadDomainFromNode($node->getNode('domain'))
+                              : null,
+                notes:    $node->hasNode('notes')
+                              ? (string) $node->getNode('notes')->getAttribute('data')
+                              : null,
+                context:  $node->hasNode('context')
+                              ? (string) $node->getNode('context')->getAttribute('data')
+                              : null,
+            );
         }
 
         return $node;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function doLeaveNode(Node $node, Environment $env): ?Node
+    public function leaveNode(Node $node, Environment $env): ?Node
     {
         return $node;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getPriority(): int
     {
         return 0;
     }
 
-    private function getReadDomainFromArguments(Node $arguments, int $index): ?string
+    private function getReadDomainFromArguments(Node $arguments): ?string
     {
-        if ($arguments->hasNode('domain')) {
-            $argument = $arguments->getNode('domain');
-        } elseif ($arguments->hasNode((string) $index)) {
-            $argument = $arguments->getNode((string) $index);
-        } else {
-            return null;
+        if ($arguments->hasNode('1')) {
+            $argument = $arguments->getNode('1');
+            return $this->getReadDomainFromNode($argument);
         }
 
-        return $this->getReadDomainFromNode($argument);
+        return null;
     }
 
-    private function getReadDomainFromNode(Node $node): ?string
+    private function getReadDomainFromNode(Node $node): string
     {
         if ($node instanceof ConstantExpression) {
-            return $node->getAttribute('value');
+            return (string) $node->getAttribute('value');
         }
 
         return self::UNDEFINED_DOMAIN;

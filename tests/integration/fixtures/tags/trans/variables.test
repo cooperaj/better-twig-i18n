@@ -1,0 +1,12 @@
+--TEST--
+with variables
+--TEMPLATE--
+<h1>{% trans with {'%variable%': 'variable'} %}A quick test of a "%variable%"{% endtrans %}</h1>
+<h1>{% trans with {'%variable%': var} %}A quick test of a variable "%variable%"{% endtrans %}</h1>
+<h1>{% trans with data %}A quick test of a variable "%var%" by array{% endtrans %}</h1>
+--DATA--
+return ['var' => 'variable', 'data' => ['%var%' => 'variable']]
+--EXPECT--
+<h1>A quick test of a "variable"</h1>
+<h1>A quick test of a variable "variable"</h1>
+<h1>A quick test of a variable "variable" by array</h1>

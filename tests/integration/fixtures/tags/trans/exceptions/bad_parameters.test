@@ -1,0 +1,8 @@
+--TEST--
+bad parameters throw exception
+--TEMPLATE--
+{% trans has "this" %}A test page{% endtrans %}
+--DATA--
+return []
+--EXCEPTION--
+Twig\Error\SyntaxError: Unexpected token. Twig was looking for the "with", "count" or "from" keyword in "index.twig" at line 2.

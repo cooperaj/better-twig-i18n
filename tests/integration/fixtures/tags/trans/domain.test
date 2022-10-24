@@ -1,0 +1,8 @@
+--TEST--
+with domain
+--TEMPLATE--
+{% trans from 'errors' %}This is an error{% endtrans %}
+--DATA--
+return []
+--EXPECT--
+This is an error

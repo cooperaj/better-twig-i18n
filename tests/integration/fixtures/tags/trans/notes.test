@@ -1,0 +1,8 @@
+--TEST--
+with notes
+--TEMPLATE--
+<h1>{% trans %}A test page{% notes %}Translator notes to be extracted{% endtrans %}</h1>
+--DATA--
+return []
+--EXPECT--
+<h1>A test page</h1>

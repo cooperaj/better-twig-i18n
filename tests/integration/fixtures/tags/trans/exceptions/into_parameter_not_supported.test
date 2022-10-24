@@ -1,0 +1,8 @@
+--TEST--
+into tag not supported
+--TEMPLATE--
+{% trans into "this" %}A test page{% endtrans %}
+--DATA--
+return []
+--EXCEPTION--
+Twig\Error\SyntaxError: The "into" tag is not available in this iteration of the twig translation syntax in "index.twig" at line 2.

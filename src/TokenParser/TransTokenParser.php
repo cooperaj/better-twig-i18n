@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Acpr\I18n\TokenParser;
 
 use Acpr\I18n\Node\TransNode;
+use Acpr\I18n\UnhandledPluralisationRuleException;
 use Twig\Error\SyntaxError;
 use Twig\Node\Expression\AbstractExpression;
 use Twig\Node\Expression\ArrayExpression;
@@ -22,16 +23,16 @@ use Twig\Node\TextNode;
 use Twig\Token;
 use Twig\TokenParser\AbstractTokenParser;
 
-/**
- * Token Parser for the 'trans' tag.
- *
- * @author Fabien Potencier <fabien@symfony.com>
- * @author Adam Cooper <adam@acpr.dev>
- */
 final class TransTokenParser extends AbstractTokenParser
 {
     /**
-     * {@inheritdoc}
+     * @param Token $token
+     *
+     * @return Node
+     * @throws SyntaxError
+     * @throws UnhandledPluralisationRuleException
+     *
+     * @psalm-suppress InternalMethod
      */
     public function parse(Token $token): Node
     {
@@ -48,24 +49,27 @@ final class TransTokenParser extends AbstractTokenParser
             if ($stream->test('count')) {
                 // {% trans count 5 %}
                 $stream->next();
+                /** @var AbstractExpression $count */
                 $count = $this->parser->getExpressionParser()->parseExpression();
             }
 
             if ($stream->test('with')) {
                 // {% trans with vars %}
                 $stream->next();
+                /** @var AbstractExpression $vars */
                 $vars = $this->parser->getExpressionParser()->parseExpression();
             }
 
             if ($stream->test('from')) {
                 // {% trans from "messages" %}
                 $stream->next();
+                /** @var AbstractExpression $domain */
                 $domain = $this->parser->getExpressionParser()->parseExpression();
             }
 
             if ($stream->test('into')) {
                 throw new SyntaxError(
-                    'The "into" tag is not available in this iteration of the twig translation syntax',
+                    'The "into" tag is not available in this iteration of the twig translation syntax.',
                     $stream->getCurrent()->getLine(),
                     $stream->getSourceContext()
                 );
@@ -82,7 +86,7 @@ final class TransTokenParser extends AbstractTokenParser
         $stream->expect(Token::BLOCK_END_TYPE);
         $body = $this->parser->subparse([$this, 'decideTransFork']);
 
-        if (!$body instanceof TextNode && !$body instanceof AbstractExpression) {
+        if (!$body instanceof TextNode) {
             throw new SyntaxError(
                 'A message inside a trans tag must be a simple text.',
                 $body->getTemplateLine(),
@@ -96,10 +100,9 @@ final class TransTokenParser extends AbstractTokenParser
                     // Provides translator notes
                     // ... {% notes %}a note ...
                     $stream->expect(Token::BLOCK_END_TYPE);
-                    /** @var TextNode $notes */
                     $notes = $this->parser->subparse([$this, 'decideTransFork']);
 
-                    if (!$notes instanceof TextNode && !$notes instanceof AbstractExpression) {
+                    if (!$notes instanceof TextNode) {
                         throw new SyntaxError(
                             'A message following a notes tag must be a simple text.',
                             $body->getTemplateLine(),
@@ -112,20 +115,17 @@ final class TransTokenParser extends AbstractTokenParser
                     // Allows the disambiguation of msgids based on the provided context text.
                     // ... {% context %}a note ...
                     $stream->expect(Token::BLOCK_END_TYPE);
-                    /** @var TextNode $notes */
                     $context = $this->parser->subparse([$this, 'decideTransFork']);
 
-                    if (!$context instanceof TextNode && !$context instanceof AbstractExpression) {
+                    if (!$context instanceof TextNode) {
                         throw new SyntaxError(
-                            'A message following a notes tag must be a simple text.',
+                            'A message following a context tag must be a simple text.',
                             $body->getTemplateLine(),
                             $stream->getSourceContext()
                         );
                     }
 
                     break;
-                default:
-                    continue 2;
             }
         }
 
@@ -155,23 +155,25 @@ final class TransTokenParser extends AbstractTokenParser
 
     /**
      * The twig translation extension expects a delimited key/id for it's rules.
-     * @see Symfony\Contracts\Translation\TranslatorInterface for more information on the format.
-     *
-     * Copied from Symfony\Component\Translation\Dumper\PoFileDumper
-     * @copyright Fabien Potencier <fabien@symfony.com>
      *
      * @param TextNode $body
-     * @return TextNode[]
+     *
+     * @return array<TextNode>
+     * @throws UnhandledPluralisationRuleException
+     * @copyright Fabien Potencier <fabien@symfony.com>
+     *
+     * @see       Symfony\Contracts\Translation\TranslatorInterface for more information on the format.
+     *
+     * Copied from Symfony\Component\Translation\Dumper\PoFileDumper
      */
     private function parsePluralisation(TextNode $body): array
     {
+        /** @var string $msg */
         $msg = $body->getAttribute('data');
 
         // Partly copied from TranslatorTrait::trans.
         $parts = [];
-        if (preg_match('/^\|++$/', $msg)) {
-            $parts = explode('|', $msg);
-        } elseif (preg_match_all('/(?:\|\||[^\|])++/', $msg, $matches)) {
+        if (preg_match_all('/(?:\|\||[^\|])++/', $msg, $matches)) {
             $parts = $matches[0];
         }
 
@@ -197,7 +199,9 @@ EOF;
 
             if (preg_match($intervalRegexp, $part)) {
                 // Explicit rule is not a standard rule.
-                return [];
+                throw new UnhandledPluralisationRuleException(
+                    'Interval based pluralisation definitions are not supported.'
+                );
             } else {
                 $standardRules[] = $part;
             }

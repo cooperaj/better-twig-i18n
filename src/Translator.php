@@ -11,16 +11,10 @@ use function putenv;
 
 class Translator implements TranslatorInterface
 {
-    private GettextTranslator $translator;
-
-    public function __construct(GettextTranslator $translator)
+    public function __construct(private GettextTranslator $translator)
     {
-        $this->translator = $translator;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function setLocale(string $locale): void
     {
         // We want to *encourage* this work on a number of operating systems that apparently use
@@ -32,33 +26,28 @@ class Translator implements TranslatorInterface
         $this->translator->setLanguage($locale);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getTranslator(): GettextTranslatorInterface
     {
         return $this->translator;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function translate(
         string $original,
         array $replacements = [],
         ?string $domain = null,
         ?string $context = null,
         ?string $plural = null,
-        ?int $count = null
+        ?int $count = null,
     ): string {
         [$function, $arguments] = $this->parseTranslationFunction(
-            $domain,
-            $context,
-            $original,
-            $plural,
-            $count
+            domain: $domain,
+            context: $context,
+            original: $original,
+            plural: $plural,
+            count: $count,
         );
 
+        /** @var string $translated */
         $translated = $this->translator->$function(...$arguments);
 
         if (null !== $count) {
@@ -73,7 +62,7 @@ class Translator implements TranslatorInterface
         ?string $context,
         string $original,
         ?string $plural,
-        ?int $count
+        ?int $count,
     ): array {
 
         $functionName = sprintf(

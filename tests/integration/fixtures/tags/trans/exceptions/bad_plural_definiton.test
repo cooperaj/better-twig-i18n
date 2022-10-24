@@ -1,0 +1,8 @@
+--TEST--
+bad plural defintion
+--TEMPLATE--
+{% trans count 2 %}{0}There are no apples|{1}There is 1 apple|]1,Inf]There are %count% apples{% endtrans %}
+--DATA--
+return []
+--EXCEPTION--
+Twig\Error\SyntaxError: An exception has been thrown during the compilation of a template ("Interval based pluralisation definitions are not supported.") in "index.twig".

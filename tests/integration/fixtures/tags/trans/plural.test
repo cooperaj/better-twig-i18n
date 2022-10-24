@@ -1,0 +1,10 @@
+--TEST--
+with plural definition
+--TEMPLATE--
+<p>{% trans count 1 %}I have an apple|I have %count% apples{% endtrans %}</p>
+<p>{% trans count 3 %}I have an apple|I have %count% apples{% endtrans %}</p>
+--DATA--
+return []
+--EXPECT--
+<p>I have an apple</p>
+<p>I have 3 apples</p>

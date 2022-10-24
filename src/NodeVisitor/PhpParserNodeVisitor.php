@@ -9,15 +9,19 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\NodeVisitorAbstract;
 
-class PhpParserNodeVisitor extends NodeVisitorAbstract
+final class PhpParserNodeVisitor extends NodeVisitorAbstract
 {
+    /** @var array<Message>  */
     private array $messages;
 
     public function __construct()
     {
         $this->messages = [];
     }
-    
+
+    /**
+     * @return array<Message>
+     */
     public function getMessages(): array
     {
         return $this->messages;
@@ -25,30 +29,53 @@ class PhpParserNodeVisitor extends NodeVisitorAbstract
 
     public function leaveNode(Node $node)
     {
-        if ($node instanceof MethodCall
-            && $node->name->toString() === 'translate'
-            && count($node->args) > 0
-            && $node->args[0]->value instanceof Node\Scalar\String_
+        if (!$node instanceof MethodCall) {
+            return null;
+        }
+
+        /** @var Node\Identifier $name */
+        $name = $node->name;
+        if ($name->toString() !== 'translate') {
+            return null;
+        }
+
+        /** @var array<Arg> $args */
+        $args = $node->args;
+        if (
+            count($args) > 0
+            && $args[TranslateFunctionArgument::Message->value]->value instanceof Node\Scalar\String_
         ) {
-            $this->messages[] = [
-                $node->args[0]->value->value,
-                $this->isValidArgument($node->args, 4) ? $node->args[4]->value->value : null, // plural
-                $this->isValidArgument($node->args, 2) ? $node->args[2]->value->value : null, // domain
-                null,
-                $this->isValidArgument($node->args, 3) ? $node->args[3]->value->value : null, // context
-                $node->getStartLine()
-            ];
+            /** @var string $original */
+            $original = $this->extractArgument($args, TranslateFunctionArgument::Message);
+
+            $this->messages[] = new Message(
+                original: $original,
+                line: $node->getStartLine(),
+                plural: $this->extractArgument($args, TranslateFunctionArgument::Plural),
+                domain: $this->extractArgument($args, TranslateFunctionArgument::Domain),
+                context: $this->extractArgument($args, TranslateFunctionArgument::Context),
+            );
         }
     }
 
     /**
-     * @param Arg[] $args
-     * @param int $index
-     * @return bool
+     * @param array<Arg>                $args
+     * @param TranslateFunctionArgument $index
+     * @return string|null
      */
-    protected function isValidArgument(array $args, int $index): bool
+    private function extractArgument(array $args, TranslateFunctionArgument $index): ?string
     {
-        return isset($args[$index]) &&
-            $args[$index]->value instanceof Node\Scalar\String_;
+        $index = $index->value;
+        if (! isset($args[$index])) {
+            return null;
+        }
+
+        $value = $args[$index]->value;
+
+        if (! $value instanceof Node\Scalar\String_) {
+            return null;
+        }
+
+        return $value->value;
     }
 }

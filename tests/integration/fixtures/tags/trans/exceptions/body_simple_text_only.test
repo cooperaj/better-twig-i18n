@@ -1,0 +1,8 @@
+--TEST--
+A message inside a trans tag must be a simple text
+--TEMPLATE--
+{% trans %}{{ variable }}{% endtrans %}
+--DATA--
+return ['variable' => 'A test page']
+--EXCEPTION--
+Twig\Error\SyntaxError: A message inside a trans tag must be a simple text in "index.twig" at line 2.
