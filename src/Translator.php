@@ -47,6 +47,7 @@ class Translator implements TranslatorInterface
             count: $count,
         );
 
+        /** @var string $translated */
         $translated = $this->translator->$function(...$arguments);
 
         if (null !== $count) {
