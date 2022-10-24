@@ -51,7 +51,7 @@ jobs:
         run: composer run-script test -- --coverage-clover build/coverage.xml
 
       - name: Run static analysis
-        run: composer run-script static -- --output-format=github
+        run: composer run-script static -- --output-format=github --shepherd
 
       - uses: codecov/codecov-action@v1
         with:
