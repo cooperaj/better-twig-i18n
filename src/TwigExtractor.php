@@ -17,6 +17,7 @@ use Acpr\I18n\NodeVisitor\AbstractTranslationNodeVisitor;
 use Gettext\Translation;
 use Gettext\Translations;
 use Twig\Environment;
+use Twig\Error\SyntaxError;
 use Twig\Source;
 
 /**
@@ -36,9 +37,6 @@ class TwigExtractor extends AbstractFileExtractor implements ExtractorInterface
     ) {
     }
 
-    /**
-     * @inheritDoc
-     */
     public function extract(string $resource): array
     {
         /** @var Translations[] $catalogues */
@@ -71,22 +69,21 @@ class TwigExtractor extends AbstractFileExtractor implements ExtractorInterface
     /**
      * Parses a twig template for translation extension usages and extracts the text.
      *
-     * @param string $template The contents of a template file
-     * @param string $name The name of the template file
-     * @param string $path The path to the template file
-     * @return Translations[] An array of {@link Translations::class} keyed on translation domains
-     * @throws \Twig\Error\SyntaxError
+     * @param string $template     The contents of a template file
+     * @param string $name         The name of the template file
+     * @param string $path         The path to the template file
+     * @return array<Translations> An array of {@link Translations::class} keyed on translation domains
+     * @throws SyntaxError
      */
     protected function extractTemplateDetails(
         string $template,
         string $name,
         string $path,
     ): array {
-        /** @var Translations[] $translations */
+        /** @var array<Translations> $translations */
         $translations = [];
 
-        /** @var TranslationExtension $extension */
-        $extension = $this->twig->getExtension('Acpr\I18n\TranslationExtension');
+        $extension = $this->twig->getExtension(TranslationExtension::class);
         $visitor = $extension->getNodeVisitors()[0];
 
         if ($visitor instanceof AbstractTranslationNodeVisitor) {
@@ -127,9 +124,6 @@ class TwigExtractor extends AbstractFileExtractor implements ExtractorInterface
         return $translations;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getExtension(): string
     {
         return self::EXTENSION;

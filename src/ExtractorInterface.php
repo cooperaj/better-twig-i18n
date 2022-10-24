@@ -19,9 +19,9 @@ interface ExtractorInterface
      * ]
      * ```
      *
-     * @param string $resource Pulls a list of twig file info objects from a supplied filename, iterable list of
-     *                         filenames or directory name
-     * @return Translations[]  A keyed array of {@link Translations::class} objects
+     * @param string $resource      Pulls a list of twig file info objects from a supplied filename, iterable list of
+     *                              filenames or directory name
+     * @return array<Translations>  A keyed array of {@link Translations::class} objects
      */
     public function extract(string $resource): array;
 }

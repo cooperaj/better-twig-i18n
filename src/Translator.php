@@ -15,9 +15,6 @@ class Translator implements TranslatorInterface
     {
     }
 
-    /**
-     * @inheritDoc
-     */
     public function setLocale(string $locale): void
     {
         // We want to *encourage* this work on a number of operating systems that apparently use
@@ -29,17 +26,11 @@ class Translator implements TranslatorInterface
         $this->translator->setLanguage($locale);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getTranslator(): GettextTranslatorInterface
     {
         return $this->translator;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function translate(
         string $original,
         array $replacements = [],

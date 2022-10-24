@@ -12,10 +12,10 @@ abstract class AbstractFileExtractor
     /**
      * Pulls a list of php file info objects from a supplied filename, iterable list of filenames or directory name
      *
-     * @param $resource
-     * @return array|SplFileInfo[]|Finder
+     * @param string $resource
+     * @return array<SplFileInfo>|Finder
      */
-    protected function extractFiles($resource)
+    protected function extractFiles(string $resource): array|Finder
     {
         if (is_file($resource)) {
             $files = $this->canBeExtracted($resource) ? [$this->toSplFileInfo($resource)] : [];
@@ -37,20 +37,12 @@ abstract class AbstractFileExtractor
         return new SplFileInfo($file);
     }
 
-    /**
-     * @param string $file
-     * @return bool
-     */
     protected function canBeExtracted(string $file): bool
     {
         return $this->getExtension() === pathinfo($file, PATHINFO_EXTENSION);
     }
 
-    /**
-     * @param $directory
-     * @return Finder
-     */
-    protected function extractFromDirectory($directory)
+    protected function extractFromDirectory(string $directory): Finder
     {
         $finder = new Finder();
 

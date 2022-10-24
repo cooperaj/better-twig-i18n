@@ -21,9 +21,6 @@ use Twig\TwigFilter;
 
 /**
  * Provides integration of the Translation component with Twig.
- *
- * @author Fabien Potencier <fabien@symfony.com>
- * @author Adam Cooper <adam@acpr.dev>
  */
 class TranslationExtension extends AbstractExtension
 {
@@ -41,19 +38,13 @@ class TranslationExtension extends AbstractExtension
         return $this->translator;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getFilters(): array
     {
         return [
-            new TwigFilter('trans', [$this, 'trans']),
+            new TwigFilter('trans', $this->trans(...)),
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getTokenParsers(): array
     {
         return [
@@ -62,9 +53,6 @@ class TranslationExtension extends AbstractExtension
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getNodeVisitors(): array
     {
         return [$this->nodeVisitor];

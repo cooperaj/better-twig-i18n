@@ -21,41 +21,37 @@ use Twig\Node\Expression\NameExpression;
 use Twig\Node\Node;
 use Twig\Node\TextNode;
 
-/**
- * @author Fabien Potencier <fabien@symfony.com>
- * @author Adam Cooper <adam@acpr.dev>
- */
 final class TransNode extends Node
 {
     public function __construct(
         Node $original,
-        Node $plural = null,
-        Node $domain = null,
-        AbstractExpression $count = null,
-        AbstractExpression $vars = null,
-        TextNode $notes = null,
-        TextNode $context = null,
+        ?Node $plural = null,
+        ?Node $domain = null,
+        ?AbstractExpression $count = null,
+        ?AbstractExpression $vars = null,
+        ?TextNode $notes = null,
+        ?TextNode $context = null,
         int $lineno = 0,
-        string $tag = null
+        ?string $tag = null
     ) {
         $nodes = ['body' => $original];
 
-        if (null !== $plural) {
+        if ($plural !== null) {
             $nodes['plural'] = $plural;
         }
-        if (null !== $domain) {
+        if ($domain !== null) {
             $nodes['domain'] = $domain;
         }
-        if (null !== $count) {
+        if ($count !== null) {
             $nodes['count'] = $count;
         }
-        if (null !== $vars) {
+        if ($vars !== null) {
             $nodes['vars'] = $vars;
         }
-        if (null !== $notes) {
+        if ($notes !== null) {
             $nodes['notes'] = $notes;
         }
-        if (null !== $context) {
+        if ($context !== null) {
             $nodes['context'] = $context;
         }
 
@@ -67,15 +63,18 @@ final class TransNode extends Node
         $compiler->addDebugInfo($this);
 
         $defaults = new ArrayExpression([], -1);
-        if ($this->hasNode('vars') && ($vars = $this->getNode('vars')) instanceof ArrayExpression) {
-            $defaults = $this->getNode('vars');
+        $vars = $this->getNode('vars');
+
+        if ($this->hasNode('vars') && $vars instanceof ArrayExpression) {
+            $defaults = $vars;
             $vars = null;
         }
+
         [$msg, $plural, $defaults] = $this->compileString(
             $this->getNode('body'),
             $defaults,
             $this->hasNode('count') ? $this->getNode('plural') : null,
-            (bool) $vars
+            (bool) $vars,
         );
 
         $compiler
@@ -85,12 +84,12 @@ final class TransNode extends Node
 
         $compiler->raw(', ');
 
-        if (null !== $vars) {
+        if ($vars !== null) {
             $compiler
                 ->raw('array_merge(')
                 ->subcompile($defaults)
                 ->raw(', ')
-                ->subcompile($this->getNode('vars'))
+                ->subcompile($vars)
                 ->raw(')')
             ;
         } else {
@@ -110,7 +109,7 @@ final class TransNode extends Node
         if ($this->hasNode('context')) {
             $compiler->subcompile(
                 new ConstantExpression(
-                    trim($this->getNode('context')->getAttribute('data')),
+                    trim((string) $this->getNode('context')->getAttribute('data')),
                     $this->getNode('context')->getTemplateLine()
                 )
             );
@@ -119,6 +118,7 @@ final class TransNode extends Node
         }
 
         if ($this->hasNode('count')) {
+            /** @psalm-var Node $plural */
             $compiler
                 ->raw(', ')
                 ->subcompile($plural)
@@ -130,20 +130,27 @@ final class TransNode extends Node
         $compiler->raw(");\n");
     }
 
+    /**
+     * @param Node            $body
+     * @param ArrayExpression $vars
+     * @param Node|null       $plural
+     * @param bool            $ignoreStrictCheck
+     *
+     * @return array
+     * @psalm-return array{0: Node, 1: ?Node, 2: ArrayExpression}
+     */
     private function compileString(
         Node $body,
         ArrayExpression $vars,
         ?Node $plural = null,
         bool $ignoreStrictCheck = false
     ): array {
-        if ($body instanceof TextNode) {
-            $msg = $body->getAttribute('data');
-        } else {
-            return [$body, $vars];
-        }
+        /** @var string $msg */
+        $msg = $body->getAttribute('data');
 
         $pmsg = '';
         if ($plural !== null) {
+            /** @var string $pmsg */
             $pmsg = $plural->getAttribute('data');
         }
 
@@ -152,10 +159,12 @@ final class TransNode extends Node
         preg_match_all('/(?<!%)%([^%]+)%/', $msg . $pmsg, $matches);
 
         foreach ($matches[1] as $var) {
-            $key = new ConstantExpression('%'.$var.'%', $body->getTemplateLine());
+            $key = new ConstantExpression('%' . $var . '%', $body->getTemplateLine());
             if (!$vars->hasElement($key)) {
                 if ('count' === $var && $this->hasNode('count')) {
-                    $vars->addElement($this->getNode('count'), $key);
+                    /** @var AbstractExpression $countNode */
+                    $countNode = $this->getNode('count');
+                    $vars->addElement($countNode, $key);
                 } else {
                     $varExpr = new NameExpression($var, $body->getTemplateLine());
                     $varExpr->setAttribute('ignore_strict_check', $ignoreStrictCheck);

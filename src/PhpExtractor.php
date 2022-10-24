@@ -14,16 +14,12 @@ use PhpParser\ParserFactory;
 class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
 {
     protected const EXTENSION = 'php';
-
     protected const DEFAULT_DOMAIN = 'messages';
 
     public function __construct(private string $defaultDomain = self::DEFAULT_DOMAIN)
     {
     }
 
-    /**
-     * @inheritDoc
-     */
     public function extract(string $resource): array
     {
         /** @var Translations[] $catalogues */
@@ -57,7 +53,7 @@ class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
      * @param string $contents The contents of the PHP file
      * @param string $filename
      * @param string $path
-     * @return array A translation catalague containing domain keyed translations
+     * @return array A translation catalogue containing domain keyed translations
      * @throws Error Parsing of the PHP file has failed
      */
     private function extractPhpFile(string $contents, string $filename, string $path): array
@@ -65,10 +61,10 @@ class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
         /** @var Translations[] $translations */
         $translations = [];
 
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
         $visitor = new PhpParserNodeVisitor();
 
-        $traverser = new NodeTraverser;
+        $traverser = new NodeTraverser();
         $traverser->addVisitor($visitor);
         $traverser->traverse($parser->parse($contents));
 
@@ -100,9 +96,6 @@ class PhpExtractor extends AbstractFileExtractor implements ExtractorInterface
         return $translations;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getExtension(): string
     {
         return self::EXTENSION;
