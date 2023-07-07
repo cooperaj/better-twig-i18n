@@ -138,9 +138,11 @@ final class TransTokenParser extends AbstractTokenParser
         }
 
         // strip whitespace of more than 1 character
+        /** @var string $msg */
+        $msg = $body->getAttribute('data');
         $body->setAttribute(
             'data',
-            preg_replace('/\s{2,}/', ' ', $body->getAttribute('data'))
+            preg_replace('/\s{2,}/', ' ', $msg)
         );
 
         return new TransNode($body, $plural, $domain, $count, $vars, $notes, $context, $lineno, $this->getTag());
