@@ -137,6 +137,12 @@ final class TransTokenParser extends AbstractTokenParser
             [$body, $plural] = $this->parsePluralisation($body);
         }
 
+        // strip whitespace of more than 1 character
+        $body->setAttribute(
+            'data',
+            preg_replace('/\s{2,}/', ' ', $body->getAttribute('data'))
+        );
+
         return new TransNode($body, $plural, $domain, $count, $vars, $notes, $context, $lineno, $this->getTag());
     }
 
@@ -162,7 +168,7 @@ final class TransTokenParser extends AbstractTokenParser
      * @throws UnhandledPluralisationRuleException
      * @copyright Fabien Potencier <fabien@symfony.com>
      *
-     * @see       Symfony\Contracts\Translation\TranslatorInterface for more information on the format.
+     * @see       \Symfony\Contracts\Translation\TranslatorInterface for more information on the format.
      *
      * Copied from Symfony\Component\Translation\Dumper\PoFileDumper
      */
