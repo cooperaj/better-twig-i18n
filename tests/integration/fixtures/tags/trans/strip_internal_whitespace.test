@@ -1,0 +1,9 @@
+--TEST--
+strip internal whitespace from keys
+--TEMPLATE--
+        <p>{% trans %}If your translation key contains new lines due to syntax indentation we want
+        to be sure that they're all stripped out{% endtrans %}</p>
+--DATA--
+return []
+--EXPECT--
+<p>If your translation key contains new lines due to syntax indentation we want to be sure that they're all stripped out</p>
