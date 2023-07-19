@@ -94,10 +94,25 @@ msgstr[0] ""
    // This will
    $value = $translator->translate('I have an apple');
    ```
-   
-   
 
 ## Usage
  
  > See [extract.php](example/extract.php) and [index.php](example/index.php) for example usage.
 
+## Upgrading
+
+### Upgrading to v3.0.0 from prior versions
+
+v3 introduces a new method of extracting keys that removes whitespace of more than 2 characters from the primary
+language keys ([see the release notes for more information](https://github.com/cooperaj/better-twig-i18n/releases/tag/v3.0.0))
+
+There is a [script](./scripts/v3_po_update.php) available in the [scripts folder](./scripts) that will help to migrate
+any existing PO files you have to the newer keys and minimise the pain of poedit deciding everything is new rather than 
+different. It will likely need editing to your requirements but is usage is simple.
+
+```shell
+$ cp scripts/v3_po_update.php folder/containing/po.files
+$ cd folder/containing/po.files
+# edit script as appropriate for your translation domains
+$ php v3_po_update.php
+```
