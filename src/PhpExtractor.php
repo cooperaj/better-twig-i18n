@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Acpr\I18n;
 
 use Acpr\I18n\NodeVisitor\PhpParserNodeVisitor;
-use Gettext\Translation;
 use Gettext\Translations;
 use PhpParser\Error;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
 
+/**
+ * @api
+ */
 class PhpExtractor extends AbstractFileExtractor
 {
     protected const EXTENSION = 'php';
@@ -28,7 +30,7 @@ class PhpExtractor extends AbstractFileExtractor
         /** @var array<Translations> $translations */
         $translations = [];
 
-        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+        $parser = (new ParserFactory())->createForNewestSupportedVersion();
         $visitor = new PhpParserNodeVisitor();
 
         $traverser = new NodeTraverser();
@@ -36,7 +38,7 @@ class PhpExtractor extends AbstractFileExtractor
         $traverser->traverse($parser->parse($content) ?? []);
 
         foreach ($visitor->getMessages() as $message) {
-            $domain = $message->domain ?: $this->defaultDomain;
+            $domain = $message->domain ?? $this->defaultDomain;
 
             $translations[$domain] = $catalogue = $translations[$domain] ?? Translations::create($domain);
 

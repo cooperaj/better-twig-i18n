@@ -24,6 +24,8 @@ use Twig\Source;
  *
  * Implements additional functionality beyond the standard extractor with the addition of message
  * context and comments/notes.
+ *
+ * @api
  */
 class TwigExtractor extends AbstractFileExtractor
 {
@@ -60,7 +62,7 @@ class TwigExtractor extends AbstractFileExtractor
             $parser = $this->twig->parse($this->twig->tokenize(new Source($content, $name, $path)));
 
             foreach ($visitor->getMessages() as $message) {
-                $domain = $message->domain ?: $this->defaultDomain;
+                $domain = $message->domain ?? $this->defaultDomain;
 
                 $translations[$domain] = $catalogue = $translations[$domain] ?? Translations::create($domain);
 

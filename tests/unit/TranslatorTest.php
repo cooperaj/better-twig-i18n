@@ -6,17 +6,17 @@ namespace AcprUnit\I18n;
 
 use Acpr\I18n\Translator;
 use Gettext\GettextTranslator as GettextTranslator;
+use PHPUnit\Framework\Attributes\BackupGlobals;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Acpr\I18n\Translator
- */
+#[CoversClass(\Acpr\I18n\Translator::class)]
 class TranslatorTest extends TestCase
 {
-    /**
-     * @test
-     * @backupGlobals enabled
-     */
+    #[Test]
+    #[BackupGlobals(true)]
     public function canSetLocale(): void
     {
         putenv('LC_ALL');
@@ -35,9 +35,7 @@ class TranslatorTest extends TestCase
         $this->assertEquals('de_DE', getenv('LC_LANGUAGE'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsSuppliedTranslator(): void
     {
         $gettextTranslator = $this->createStub(GettextTranslator::class);
@@ -49,10 +47,8 @@ class TranslatorTest extends TestCase
         $this->assertEquals($gettextTranslator, $translator);
     }
 
-    /**
-     * @test
-     * @dataProvider translationExpectationProvider
-     */
+    #[Test]
+    #[DataProvider('translationExpectationProvider')]
     public function providesASingleTranslateFunctionThatMapsToGettext(
         array $arguments,
         string $functionName,
@@ -73,7 +69,7 @@ class TranslatorTest extends TestCase
         $this->assertEquals('success', $string);
     }
 
-    public function translationExpectationProvider(): array
+    public static function translationExpectationProvider(): array
     {
         return [
             'gettext' => [
@@ -119,9 +115,7 @@ class TranslatorTest extends TestCase
         ];
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function interpolatesTokens()
     {
         $gettextTranslator = $this->createStub(GettextTranslator::class);
@@ -134,9 +128,7 @@ class TranslatorTest extends TestCase
         $this->assertEquals('string with tokens', $string);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createsMissingCountToken()
     {
         $gettextTranslator = $this->createStub(GettextTranslator::class);

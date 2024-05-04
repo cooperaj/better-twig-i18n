@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Acpr\I18n\TokenParser;
 
 use Acpr\I18n\Node\TransNode;
-use Acpr\I18n\UnhandledPluralisationRuleException;
 use Twig\Error\SyntaxError;
 use Twig\Node\Expression\AbstractExpression;
 use Twig\Node\Expression\ArrayExpression;
@@ -30,7 +29,7 @@ final class TransTokenParser extends AbstractTokenParser
      *
      * @return Node
      * @throws SyntaxError
-     * @throws UnhandledPluralisationRuleException
+     * @throws UnhandledPluralisationRuleException|BadPluralisationRuleException
      *
      * @psalm-suppress InternalMethod
      */
@@ -148,6 +147,12 @@ final class TransTokenParser extends AbstractTokenParser
         return new TransNode($body, $plural, $domain, $count, $vars, $notes, $context, $lineno, $this->getTag());
     }
 
+    /**
+     * @todo start calling this with the first class callable syntax when upstream tweak
+     *       supports it in its tests.
+     *
+     * @psalm-suppress PossiblyUnusedMethod
+     */
     public function decideTransFork(Token $token): bool
     {
         return $token->test(['context', 'notes', 'endtrans']);
@@ -168,6 +173,7 @@ final class TransTokenParser extends AbstractTokenParser
      *
      * @return array<TextNode>
      * @throws UnhandledPluralisationRuleException
+     * @throws BadPluralisationRuleException
      * @copyright Fabien Potencier <fabien@symfony.com>
      *
      * @see       \Symfony\Contracts\Translation\TranslatorInterface for more information on the format.
@@ -181,7 +187,7 @@ final class TransTokenParser extends AbstractTokenParser
 
         // Partly copied from TranslatorTrait::trans.
         $parts = [];
-        if (preg_match_all('/(?:\|\||[^\|])++/', $msg, $matches)) {
+        if (preg_match_all('/(?:\|\||[^\|])++/', $msg, $matches) > 0) {
             $parts = $matches[0];
         }
 
@@ -213,6 +219,12 @@ EOF;
             } else {
                 $standardRules[] = $part;
             }
+        }
+
+        if (count($standardRules) !== 2) {
+            throw new BadPluralisationRuleException(
+                'It was not possible to parse the pluralisation rule ' . $msg
+            );
         }
 
         $body->setAttribute('data', $standardRules[0]);

@@ -9,6 +9,9 @@ use Gettext\TranslatorInterface as GettextTranslatorInterface;
 
 use function putenv;
 
+/**
+ * @api
+ */
 class Translator implements TranslatorInterface
 {
     public function __construct(private GettextTranslator $translator)

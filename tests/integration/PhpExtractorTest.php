@@ -8,16 +8,16 @@ use Acpr\I18n\PhpExtractor;
 use Gettext\Translation;
 use Gettext\Translations;
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Acpr\I18n\PhpExtractor
- * @covers \Acpr\I18n\AbstractFileExtractor
- * @covers \Acpr\I18n\NodeVisitor\PhpParserNodeVisitor
- */
+#[CoversClass(\Acpr\I18n\PhpExtractor::class)]
+#[CoversClass(\Acpr\I18n\AbstractFileExtractor::class)]
+#[CoversClass(\Acpr\I18n\NodeVisitor\PhpParserNodeVisitor::class)]
 class PhpExtractorTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function extractsASinglePhpFile(): void
     {
         $vfs = vfsStream::setup(
@@ -39,13 +39,14 @@ class PhpExtractorTest extends TestCase
         $this->assertInstanceOf(Translations::class, $catalogues['messages']);
         $this->assertCount(1, $catalogues['messages']);
 
-        /** @var Translation $translation */
         $this->assertArrayHasKey("\004My Title", $catalogues['messages']->getTranslations());
+
+        /** @var Translation $translation */
         $translation = $catalogues['messages']->getTranslations()["\004My Title"];
         $this->assertEquals('My Title', $translation->getOriginal());
     }
 
-    /** @test */
+    #[Test]
     public function extractsADirectoryOfPhpFiles(): void
     {
         $vfs = vfsStream::setup(
@@ -71,17 +72,20 @@ class PhpExtractorTest extends TestCase
         $this->assertInstanceOf(Translations::class, $catalogues['messages']);
         $this->assertCount(2, $catalogues['messages']);
 
-        /** @var Translation $translation */
         $this->assertArrayHasKey("\004My Title", $catalogues['messages']->getTranslations());
+
+        /** @var Translation $translation */
         $translation = $catalogues['messages']->getTranslations()["\004My Title"];
         $this->assertEquals('My Title', $translation->getOriginal());
 
         $this->assertArrayHasKey("\004About", $catalogues['messages']->getTranslations());
+
+        /** @var Translation $translation */
         $translation = $catalogues['messages']->getTranslations()["\004About"];
         $this->assertEquals('About', $translation->getOriginal());
     }
 
-    /** @test */
+    #[Test]
     public function mergesTranslationsAcrossFiles(): void
     {
         $vfs = vfsStream::setup(
@@ -105,8 +109,9 @@ class PhpExtractorTest extends TestCase
 
         $this->assertCount(1, $catalogues['messages']);
 
-        /** @var Translation $translation */
         $this->assertArrayHasKey("\004My Title", $catalogues['messages']->getTranslations());
+
+        /** @var Translation $translation */
         $translation = $catalogues['messages']->getTranslations()["\004My Title"];
         $this->assertEquals('My Title', $translation->getOriginal());
         $this->assertCount(2, $translation->getReferences()->toArray());
@@ -114,7 +119,7 @@ class PhpExtractorTest extends TestCase
         $this->assertArrayHasKey('vfs://root/about.php', $translation->getReferences()->toArray());
     }
 
-    /** @test */
+    #[Test]
     public function handlesParametersWithoutError(): void
     {
         $vfs = vfsStream::setup(
@@ -137,7 +142,7 @@ class PhpExtractorTest extends TestCase
         $this->assertEquals('My %variable%', $translation->getOriginal());
     }
 
-    /** @test */
+    #[Test]
     public function correctlySetsTheDomainWhenSpecified(): void
     {
         $vfs = vfsStream::setup(
@@ -155,13 +160,14 @@ class PhpExtractorTest extends TestCase
 
         $catalogues = $sut->extract($vfs->getChild('index.php')->url());
 
-        /** @var Translation $translation */
         $this->assertArrayHasKey("\004An Error", $catalogues['errors']->getTranslations());
+
+        /** @var Translation $translation */
         $translation = $catalogues['errors']->getTranslations()["\004An Error"];
         $this->assertEquals('An Error', $translation->getOriginal());
     }
 
-    /** @test */
+    #[Test]
     public function handlesContextInTranslationTags(): void
     {
         $vfs = vfsStream::setup(
@@ -195,7 +201,7 @@ class PhpExtractorTest extends TestCase
         $this->assertEquals('Additional context', $translation->getContext());
     }
 
-    /** @test */
+    #[Test]
     public function handlesPluralisation(): void
     {
         $vfs = vfsStream::setup(
@@ -224,7 +230,7 @@ class PhpExtractorTest extends TestCase
         $this->assertEquals('I have %count% apples', $translation->getPlural());
     }
 
-    /** @test */
+    #[Test]
     public function correctlyAttachesSourceReferences(): void
     {
         $vfs = vfsStream::setup(
