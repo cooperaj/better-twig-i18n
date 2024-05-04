@@ -60,10 +60,10 @@ jobs:
       - name: Run static analysis
         run: tools/psalm -- --output-format=github --shepherd
 
-      - uses: codecov/codecov-action@v1
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - uses: codecov/codecov-action@v4
         with:
           file: ./build/coverage.xml
           flags: unit,integration
           fail_ci_if_error: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
