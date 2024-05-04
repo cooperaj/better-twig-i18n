@@ -13,14 +13,14 @@ jobs:
 
     strategy:
       matrix:
-        php-versions: [ '8.1' ]
+        php-versions: [ '8.1', '8.2', '8.3' ]
 
     steps:
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          tools: composer
+          tools: composer,phive
           coverage: xdebug
 
       - name: Setup problem matchers for PHP
@@ -46,6 +46,9 @@ jobs:
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress
+
+      - name: Install tools
+        run: phive install
 
       - name: Run test suite
         run: composer run-script test -- --coverage-clover build/coverage.xml
