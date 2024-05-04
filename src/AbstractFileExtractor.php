@@ -77,11 +77,17 @@ abstract class AbstractFileExtractor implements ExtractorInterface
 
     public function extract(string $resource): array
     {
+        /** @psalm-var array<Translations> $catalogues */
         $catalogues = [];
 
         foreach ($this->extractFiles($resource) as $file) {
+            $fileContents = file_get_contents($file->getPathname());
+            if ($fileContents === false) {
+                throw new ExtractionException('Unable to read file: ' . $file->getPathname());
+            }
+
             $translations = $this->extractFromFile(
-                file_get_contents($file->getPathname()),
+                $fileContents,
                 $file->getFilename(),
                 $file->getPath()
             );
@@ -90,8 +96,6 @@ abstract class AbstractFileExtractor implements ExtractorInterface
             array_walk(
                 $translations,
                 function (Translations $translations, string $domain) use (&$catalogues) {
-                    /** @psalm-var array<Translations> $catalogues */
-
                     if (in_array($domain, array_keys($catalogues))) {
                         $catalogues[$domain] = $catalogues[$domain]->mergeWith($translations);
                     } else {

@@ -1,5 +1,5 @@
 --TEST--
-bad plural defintion
+bad plural definition
 --TEMPLATE--
 {% trans count 2 %}{0}There are no apples|{1}There is 1 apple|]1,Inf]There are %count% apples{% endtrans %}
 --DATA--

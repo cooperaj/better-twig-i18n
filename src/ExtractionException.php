@@ -6,6 +6,6 @@ namespace Acpr\I18n;
 
 use Exception;
 
-class UnhandledPluralisationRuleException extends Exception
+class ExtractionException extends Exception
 {
 }

@@ -118,10 +118,10 @@ final class TranslationNodeVisitor extends AbstractTranslationNodeVisitor
         return null;
     }
 
-    private function getReadDomainFromNode(Node $node): string
+    private function getReadDomainFromNode(Node $node): ?string
     {
         if ($node instanceof ConstantExpression) {
-            return (string) $node->getAttribute('value');
+            return $node->getAttribute('value') !== null ? (string) $node->getAttribute('value') : null;
         }
 
         return self::UNDEFINED_DOMAIN;

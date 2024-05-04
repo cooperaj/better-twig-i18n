@@ -21,6 +21,8 @@ use Twig\TwigFilter;
 
 /**
  * Provides integration of the Translation component with Twig.
+ *
+ * @api
  */
 class TranslationExtension extends AbstractExtension
 {

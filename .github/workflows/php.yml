@@ -13,14 +13,18 @@ jobs:
 
     strategy:
       matrix:
-        php-versions: [ '8.1' ]
+        php-versions: [ '8.2', '8.3' ]
+        phpunit-versions: ['11.0']
+        include:
+          - php-versions: '8.1'
+            phpunit-versions: '10.0'
 
     steps:
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          tools: composer
+          tools: composer,phive
           coverage: xdebug
 
       - name: Setup problem matchers for PHP
@@ -47,14 +51,19 @@ jobs:
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress
 
+      - name: Install tools
+        run: phive --no-progress install --trust-gpg-keys 4AA394086372C20A,12CE0F1D262429A5 phpunit@^${{ matrix.phpunit-versions }} psalm
+
       - name: Run test suite
-        run: composer run-script test -- --coverage-clover build/coverage.xml
+        run: tools/phpunit --coverage-clover build/coverage.xml
 
       - name: Run static analysis
-        run: composer run-script static -- --output-format=github --shepherd
+        run: tools/psalm -- --output-format=github --shepherd
 
-      - uses: codecov/codecov-action@v1
+      - uses: codecov/codecov-action@v4
         with:
           file: ./build/coverage.xml
           flags: unit,integration
           fail_ci_if_error: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

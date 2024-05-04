@@ -4,26 +4,27 @@ declare(strict_types=1);
 
 namespace AcprIntegration\I18n;
 
+use Acpr\I18n\ExtractionException;
 use Acpr\I18n\TwigExtractor;
 use Gettext\Translation;
 use Gettext\Translations;
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Acpr\I18n\TwigExtractor
- * @covers \Acpr\I18n\Translator
- * @covers \Acpr\I18n\TranslationExtension
- * @covers \Acpr\I18n\Node\TransNode
- * @covers \Acpr\I18n\TokenParser\TransTokenParser
- * @covers \Acpr\I18n\NodeVisitor\TranslationNodeVisitor
- * @covers \Acpr\I18n\NodeVisitor\Message
- */
+#[CoversClass(\Acpr\I18n\TwigExtractor::class)]
+#[CoversClass(\Acpr\I18n\Translator::class)]
+#[CoversClass(\Acpr\I18n\TranslationExtension::class)]
+#[CoversClass(\Acpr\I18n\Node\TransNode::class)]
+#[CoversClass(\Acpr\I18n\TokenParser\TransTokenParser::class)]
+#[CoversClass(\Acpr\I18n\NodeVisitor\TranslationNodeVisitor::class)]
+#[CoversClass(\Acpr\I18n\NodeVisitor\Message::class)]
 class TwigExtractorTest extends TestCase
 {
     use TwigEnvironmentTrait;
 
-    /** @test */
+    #[Test]
     public function extractsASingleTwigFile(): void
     {
         $vfs = vfsStream::setup(
@@ -44,13 +45,14 @@ class TwigExtractorTest extends TestCase
         $this->assertInstanceOf(Translations::class, $catalogues['messages']);
         $this->assertCount(1, $catalogues['messages']);
 
-        /** @var Translation $translation */
         $this->assertArrayHasKey("\004My Title", $catalogues['messages']->getTranslations());
+
+        /** @var Translation $translation */
         $translation = $catalogues['messages']->getTranslations()["\004My Title"];
         $this->assertEquals('My Title', $translation->getOriginal());
     }
 
-    /** @test */
+    #[Test]
     public function extractsADirectoryOfTwigFiles(): void
     {
         $vfs = vfsStream::setup(
@@ -72,17 +74,20 @@ class TwigExtractorTest extends TestCase
         $this->assertInstanceOf(Translations::class, $catalogues['messages']);
         $this->assertCount(2, $catalogues['messages']);
 
-        /** @var Translation $translation */
         $this->assertArrayHasKey("\004My Title", $catalogues['messages']->getTranslations());
+
+        /** @var Translation $translation */
         $translation = $catalogues['messages']->getTranslations()["\004My Title"];
         $this->assertEquals('My Title', $translation->getOriginal());
 
         $this->assertArrayHasKey("\004About", $catalogues['messages']->getTranslations());
+
+        /** @var Translation $translation */
         $translation = $catalogues['messages']->getTranslations()["\004About"];
         $this->assertEquals('About', $translation->getOriginal());
     }
 
-    /** @test */
+    #[Test]
     public function mergesTranslationsAcrossFiles(): void
     {
         $vfs = vfsStream::setup(
@@ -102,8 +107,9 @@ class TwigExtractorTest extends TestCase
 
         $this->assertCount(1, $catalogues['messages']);
 
-        /** @var Translation $translation */
         $this->assertArrayHasKey("\004My Title", $catalogues['messages']->getTranslations());
+
+        /** @var Translation $translation */
         $translation = $catalogues['messages']->getTranslations()["\004My Title"];
         $this->assertEquals('My Title', $translation->getOriginal());
         $this->assertCount(2, $translation->getReferences()->toArray());
@@ -111,7 +117,7 @@ class TwigExtractorTest extends TestCase
         $this->assertArrayHasKey('vfs://root/about.html.twig', $translation->getReferences()->toArray());
     }
 
-    /** @test */
+    #[Test]
     public function handlesParametersWithoutError(): void
     {
         $vfs = vfsStream::setup(
@@ -133,7 +139,7 @@ class TwigExtractorTest extends TestCase
         $this->assertEquals('My %variable%', $translation->getOriginal());
     }
 
-    /** @test */
+    #[Test]
     public function correctlySetsTheDomainWhenSpecified(): void
     {
         $vfs = vfsStream::setup(
@@ -150,13 +156,14 @@ class TwigExtractorTest extends TestCase
 
         $catalogues = $sut->extract($vfs->getChild('home.html.twig')->url());
 
-        /** @var Translation $translation */
         $this->assertArrayHasKey("\004An Error", $catalogues['errors']->getTranslations());
+
+        /** @var Translation $translation */
         $translation = $catalogues['errors']->getTranslations()["\004An Error"];
         $this->assertEquals('An Error', $translation->getOriginal());
     }
 
-    /** @test */
+    #[Test]
     public function handlesNotesInTranslationTags(): void
     {
         $vfs = vfsStream::setup(
@@ -178,7 +185,7 @@ class TwigExtractorTest extends TestCase
         $this->assertContains('A note', $translation->getExtractedComments()->toArray());
     }
 
-    /** @test */
+    #[Test]
     public function handlesContextInTranslationTags(): void
     {
         $vfs = vfsStream::setup(
@@ -208,7 +215,7 @@ class TwigExtractorTest extends TestCase
         $this->assertEquals('Additional context', $translation->getContext());
     }
 
-    /** @test */
+    #[Test]
     public function handlesContextAndNotesInTranslationTags(): void
     {
         $vfs = vfsStream::setup(
@@ -235,9 +242,7 @@ class TwigExtractorTest extends TestCase
         $this->assertContains('A note', $translation->getExtractedComments()->toArray());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function handlesPluralisation(): void
     {
         $vfs = vfsStream::setup(
@@ -264,7 +269,7 @@ class TwigExtractorTest extends TestCase
         $this->assertEquals('I have %count% apples', $translation->getPlural());
     }
 
-    /** @test */
+    #[Test]
     public function correctlyAttachesSourceReferences(): void
     {
         $vfs = vfsStream::setup(
@@ -287,7 +292,7 @@ class TwigExtractorTest extends TestCase
         $this->assertArrayHasKey('vfs://root/home.html.twig', $references);
     }
 
-    /** @test */
+    #[Test]
     public function handlesTranslationAsAFilter(): void
     {
         $vfs = vfsStream::setup(
@@ -310,7 +315,29 @@ class TwigExtractorTest extends TestCase
         $this->assertEquals('My Title', $translation->getOriginal());
 
         // Also handles plurals
+        /** @var Translation $translation */
         $translation = $catalogues['messages']->getTranslations()["\004%count% day"];
         $this->assertEquals('%count% days', $translation->getPlural());
+    }
+
+    #[Test]
+    public function exceptionThrownWhenFileReadError(): void
+    {
+        $vfs = vfsStream::setup(
+            'root',
+            null,
+            [
+                'home.html.twig' => '<h1>{% trans %}My Title{% endtrans %}</h1>'
+            ]
+        );
+
+        $vfs->getChild('home.html.twig')->chmod(0);
+
+        $twig = $this->createTwigEnvironment([$vfs->url()]);
+
+        $sut = new TwigExtractor($twig);
+
+        $this->expectException(ExtractionException::class);
+        $catalogues = $sut->extract($vfs->getChild('home.html.twig')->url());
     }
 }

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Acpr\I18n\Node;
 
+use Twig\Attribute\YieldReady;
 use Twig\Compiler;
 use Twig\Node\Expression\AbstractExpression;
 use Twig\Node\Expression\ArrayExpression;
@@ -21,6 +22,7 @@ use Twig\Node\Expression\NameExpression;
 use Twig\Node\Node;
 use Twig\Node\TextNode;
 
+#[YieldReady]
 final class TransNode extends Node
 {
     public function __construct(
@@ -78,7 +80,7 @@ final class TransNode extends Node
         );
 
         $compiler
-            ->write('echo $this->env->getExtension(\'Acpr\I18n\TranslationExtension\')->trans(')
+            ->write('yield $this->env->getExtension(\'Acpr\I18n\TranslationExtension\')->trans(')
             ->subcompile($msg)
         ;
 
