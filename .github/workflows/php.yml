@@ -48,7 +48,7 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: Install tools
-        run: phive install
+        run: phive --no-progress install --trust-gpg-keys 4AA394086372C20A
 
       - name: Run test suite
         run: composer run-script test -- --coverage-clover build/coverage.xml
