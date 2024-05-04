@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AcprIntegration\I18n;
 
+use Acpr\I18n\ExtractionException;
 use Acpr\I18n\PhpExtractor;
 use Gettext\Translation;
 use Gettext\Translations;
@@ -252,5 +253,27 @@ class PhpExtractorTest extends TestCase
         $translation = $catalogues['messages']->getTranslations()["\004My Title"];
         $references = $translation->getReferences()->toArray();
         $this->assertArrayHasKey('vfs://root/index.php', $references);
+    }
+
+    #[Test]
+    public function exceptionThrownWhenFileReadError(): void
+    {
+        $vfs = vfsStream::setup(
+            'root',
+            null,
+            [
+                'index.php' => "<?php " .
+                    "\$gettextTranslator = new GettextTranslator('de');" .
+                    "\$translator = new Translator(\$gettextTranslator);" .
+                    "\$phpTitle = \$translator->translate('My Title');"
+            ]
+        );
+
+        $vfs->getChild('index.php')->chmod(0);
+
+        $sut = new PhpExtractor();
+
+        $this->expectException(ExtractionException::class);
+        $catalogues = $sut->extract($vfs->getChild('index.php')->url());
     }
 }

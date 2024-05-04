@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AcprIntegration\I18n;
 
+use Acpr\I18n\ExtractionException;
 use Acpr\I18n\TwigExtractor;
 use Gettext\Translation;
 use Gettext\Translations;
@@ -317,5 +318,26 @@ class TwigExtractorTest extends TestCase
         /** @var Translation $translation */
         $translation = $catalogues['messages']->getTranslations()["\004%count% day"];
         $this->assertEquals('%count% days', $translation->getPlural());
+    }
+
+    #[Test]
+    public function exceptionThrownWhenFileReadError(): void
+    {
+        $vfs = vfsStream::setup(
+            'root',
+            null,
+            [
+                'home.html.twig' => '<h1>{% trans %}My Title{% endtrans %}</h1>'
+            ]
+        );
+
+        $vfs->getChild('home.html.twig')->chmod(0);
+
+        $twig = $this->createTwigEnvironment([$vfs->url()]);
+
+        $sut = new TwigExtractor($twig);
+
+        $this->expectException(ExtractionException::class);
+        $catalogues = $sut->extract($vfs->getChild('home.html.twig')->url());
     }
 }
