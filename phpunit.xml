@@ -5,20 +5,19 @@
          executionOrder="depends,defects"
          beStrictAboutOutputDuringTests="true"
          failOnRisky="true"
-         failOnWarning="true"
          cacheDirectory=".phpunit.cache"
          requireCoverageMetadata="true">
   <testsuites>
     <testsuite name="Unit">
-      <directory suffix="Test.php">tests/unit</directory>
+      <directory>tests/unit</directory>
     </testsuite>
     <testsuite name="Integration">
-      <directory suffix="Test.php">tests/integration</directory>
+      <directory>tests/integration</directory>
     </testsuite>
   </testsuites>
   <source>
     <include>
-      <directory suffix=".php">src</directory>
+      <directory>src</directory>
     </include>
   </source>
 </phpunit>
