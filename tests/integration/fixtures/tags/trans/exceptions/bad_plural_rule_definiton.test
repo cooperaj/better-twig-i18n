@@ -1,0 +1,8 @@
+--TEST--
+bad plural rule definition
+--TEMPLATE--
+{% trans count 2 %}This is missing a plural rule{% endtrans %}
+--DATA--
+return []
+--EXCEPTION--
+Twig\Error\SyntaxError: An exception has been thrown during the compilation of a template ("It was not possible to parse the pluralisation rule This is missing a plural rule") in "index.twig".
