@@ -61,6 +61,8 @@ jobs:
         run: tools/psalm -- --output-format=github --shepherd
 
       - uses: codecov/codecov-action@v1
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           file: ./build/coverage.xml
           flags: unit,integration
