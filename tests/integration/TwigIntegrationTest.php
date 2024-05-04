@@ -89,15 +89,16 @@ class TwigIntegrationTest extends TestCase
 
     public static function getIntegrationTests(): array
     {
-        $tests = self::buildTestCase()->getTests('');
-
-        return array_combine(array_map(fn($testParams) => $testParams[1], $tests), $tests);
+        return self::remapTests(self::buildTestCase()->getTests(''));
     }
 
     public static function getLegacyIntegrationTests(): array
     {
-        $tests = self::buildTestCase()->getTests('', true);
+        return self::remapTests(self::buildTestCase()->getTests('', true));
+    }
 
+    private static function remapTests(array $tests): array
+    {
         return array_combine(array_map(fn($testParams) => $testParams[1], $tests), $tests);
     }
 }
