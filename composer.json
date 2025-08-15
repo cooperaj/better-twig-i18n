@@ -12,11 +12,11 @@
   "require": {
     "php": "^8.1.0",
     "ext-gettext": "*",
-    "twig/twig": "^v3.0",
+    "twig/twig": "^v3.21",
     "symfony/finder": "^4.0 || ^5.0",
     "gettext/gettext": "^5.5",
     "gettext/translator": "^1.0",
-    "nikic/php-parser": "^4.9"
+    "nikic/php-parser": "^4.9 || ^5.6"
   },
   "require-dev": {
     "mikey179/vfsstream": "^v1.6"
