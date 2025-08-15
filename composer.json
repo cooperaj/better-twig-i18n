@@ -34,6 +34,8 @@
   },
   "scripts": {
     "test": "tools/phpunit.phar",
-    "static": "tools/psalm.phar"
+    "static": "tools/psalm.phar",
+    "lint": "tools/phpcs.phar --standard=PSR12 src/ tests/",
+    "fix-lint": "tools/phpcbf.phar --standard=PSR12 src/ tests/"
   }
 }
