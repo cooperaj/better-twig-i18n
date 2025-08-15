@@ -15,9 +15,11 @@ jobs:
       matrix:
         php-versions: [ '8.2', '8.3' ]
         phpunit-versions: ['11.0']
+        psalm-versions: ['6.0']
         include:
           - php-versions: '8.1'
             phpunit-versions: '10.0'
+            psalm-versions: '6.0'
 
     steps:
       - name: Setup PHP with PECL extension
@@ -52,7 +54,7 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: Install tools
-        run: phive --no-progress install --trust-gpg-keys 4AA394086372C20A,12CE0F1D262429A5,97B02DD8E5071466 phpunit@^${{ matrix.phpunit-versions }} psalm phpcs
+        run: phive --no-progress install --trust-gpg-keys 4AA394086372C20A,12CE0F1D262429A5,97B02DD8E5071466 phpunit@^${{ matrix.phpunit-versions }} psalm@^${{ matrix.psalm-versions }} phpcs
 
       - name: Run test suite
         run: tools/phpunit --coverage-clover build/coverage.xml
