@@ -49,21 +49,21 @@ final class TransTokenParser extends AbstractTokenParser
                 // {% trans count 5 %}
                 $stream->next();
                 /** @var AbstractExpression $count */
-                $count = $this->parser->getExpressionParser()->parseExpression();
+                $count = $this->parser->parseExpression();
             }
 
             if ($stream->test('with')) {
                 // {% trans with vars %}
                 $stream->next();
                 /** @var AbstractExpression $vars */
-                $vars = $this->parser->getExpressionParser()->parseExpression();
+                $vars = $this->parser->parseExpression();
             }
 
             if ($stream->test('from')) {
                 // {% trans from "messages" %}
                 $stream->next();
                 /** @var AbstractExpression $domain */
-                $domain = $this->parser->getExpressionParser()->parseExpression();
+                $domain = $this->parser->parseExpression();
             }
 
             if ($stream->test('into')) {
