@@ -10,13 +10,13 @@
     }
   ],
   "require": {
-    "php": "^8.1.0",
+    "php": "^8.1 || ^8.2 || ^8.3 || ^8.4",
     "ext-gettext": "*",
-    "twig/twig": "^v3.0",
+    "twig/twig": "^v3.21",
     "symfony/finder": "^4.0 || ^5.0",
     "gettext/gettext": "^5.5",
     "gettext/translator": "^1.0",
-    "nikic/php-parser": "^4.9"
+    "nikic/php-parser": "^4.9 || ^5.6"
   },
   "require-dev": {
     "mikey179/vfsstream": "^v1.6"
@@ -34,6 +34,8 @@
   },
   "scripts": {
     "test": "tools/phpunit.phar",
-    "static": "tools/psalm.phar"
+    "static": "tools/psalm.phar",
+    "lint": "tools/phpcs.phar --standard=PSR12 src/ tests/",
+    "fix-lint": "tools/phpcbf.phar --standard=PSR12 src/ tests/"
   }
 }

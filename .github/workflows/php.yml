@@ -15,16 +15,18 @@ jobs:
       matrix:
         php-versions: [ '8.2', '8.3' ]
         phpunit-versions: ['11.0']
+        psalm-versions: ['6.0']
         include:
           - php-versions: '8.1'
             phpunit-versions: '10.0'
+            psalm-versions: '5.0'
 
     steps:
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          tools: composer,phive
+          tools: composer,phive,cs2pr
           coverage: xdebug
 
       - name: Setup problem matchers for PHP
@@ -40,7 +42,7 @@ jobs:
 
       - name: Cache Composer packages
         id: composer-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: vendor
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}
@@ -52,13 +54,16 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: Install tools
-        run: phive --no-progress install --trust-gpg-keys 4AA394086372C20A,12CE0F1D262429A5 phpunit@^${{ matrix.phpunit-versions }} psalm
+        run: phive --no-progress install --trust-gpg-keys 4AA394086372C20A,12CE0F1D262429A5,97B02DD8E5071466 phpunit@^${{ matrix.phpunit-versions }} psalm@^${{ matrix.psalm-versions }} phpcs
 
       - name: Run test suite
         run: tools/phpunit --coverage-clover build/coverage.xml
 
+      - name: Run linting
+        run: tools/phpcs -q --standard=PSR12 --report=checkstyle src/ | cs2pr
+
       - name: Run static analysis
-        run: tools/psalm -- --output-format=github --shepherd
+        run: tools/psalm --output-format=github --shepherd
 
       - uses: codecov/codecov-action@v4
         with:

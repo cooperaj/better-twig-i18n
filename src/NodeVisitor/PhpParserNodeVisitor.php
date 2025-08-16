@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Acpr\I18n\NodeVisitor;
 
+use Override;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\MethodCall;
@@ -27,6 +28,7 @@ final class PhpParserNodeVisitor extends NodeVisitorAbstract
         return $this->messages;
     }
 
+    #[Override]
     public function leaveNode(Node $node)
     {
         if (!$node instanceof MethodCall) {

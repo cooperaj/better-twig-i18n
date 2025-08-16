@@ -6,6 +6,6 @@ namespace Acpr\I18n\TokenParser;
 
 use Exception;
 
-class BadPluralisationRuleException extends Exception
+final class BadPluralisationRuleException extends Exception
 {
 }

@@ -15,7 +15,6 @@ namespace Acpr\I18n\TokenParser;
 
 use Acpr\I18n\Node\TransNode;
 use Twig\Error\SyntaxError;
-use Twig\Node\Expression\AbstractExpression;
 use Twig\Node\Expression\ArrayExpression;
 use Twig\Node\Node;
 use Twig\Node\TextNode;
@@ -48,22 +47,19 @@ final class TransTokenParser extends AbstractTokenParser
             if ($stream->test('count')) {
                 // {% trans count 5 %}
                 $stream->next();
-                /** @var AbstractExpression $count */
-                $count = $this->parser->getExpressionParser()->parseExpression();
+                $count = $this->parser->parseExpression();
             }
 
             if ($stream->test('with')) {
                 // {% trans with vars %}
                 $stream->next();
-                /** @var AbstractExpression $vars */
-                $vars = $this->parser->getExpressionParser()->parseExpression();
+                $vars = $this->parser->parseExpression();
             }
 
             if ($stream->test('from')) {
                 // {% trans from "messages" %}
                 $stream->next();
-                /** @var AbstractExpression $domain */
-                $domain = $this->parser->getExpressionParser()->parseExpression();
+                $domain = $this->parser->parseExpression();
             }
 
             if ($stream->test('into')) {
@@ -144,7 +140,7 @@ final class TransTokenParser extends AbstractTokenParser
             preg_replace('/\s{2,}/', ' ', $msg)
         );
 
-        return new TransNode($body, $plural, $domain, $count, $vars, $notes, $context, $lineno, $this->getTag());
+        return new TransNode($body, $plural, $domain, $count, $vars, $notes, $context, $lineno);
     }
 
     /**

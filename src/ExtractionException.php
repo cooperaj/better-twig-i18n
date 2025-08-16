@@ -6,6 +6,6 @@ namespace Acpr\I18n;
 
 use Exception;
 
-class ExtractionException extends Exception
+final class ExtractionException extends Exception
 {
 }

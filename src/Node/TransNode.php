@@ -18,7 +18,7 @@ use Twig\Compiler;
 use Twig\Node\Expression\AbstractExpression;
 use Twig\Node\Expression\ArrayExpression;
 use Twig\Node\Expression\ConstantExpression;
-use Twig\Node\Expression\NameExpression;
+use Twig\Node\Expression\Variable\ContextVariable;
 use Twig\Node\Node;
 use Twig\Node\TextNode;
 
@@ -34,7 +34,6 @@ final class TransNode extends Node
         ?TextNode $notes = null,
         ?TextNode $context = null,
         int $lineno = 0,
-        ?string $tag = null
     ) {
         $nodes = ['body' => $original];
 
@@ -57,7 +56,7 @@ final class TransNode extends Node
             $nodes['context'] = $context;
         }
 
-        parent::__construct($nodes, [], $lineno, $tag);
+        parent::__construct($nodes, [], $lineno);
     }
 
     public function compile(Compiler $compiler): void
@@ -168,7 +167,7 @@ final class TransNode extends Node
                     $countNode = $this->getNode('count');
                     $vars->addElement($countNode, $key);
                 } else {
-                    $varExpr = new NameExpression($var, $body->getTemplateLine());
+                    $varExpr = new ContextVariable($var, $body->getTemplateLine());
                     $varExpr->setAttribute('ignore_strict_check', $ignoreStrictCheck);
                     $vars->addElement($varExpr, $key);
                 }
