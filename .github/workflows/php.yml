@@ -26,7 +26,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          tools: composer,phive
+          tools: composer,phive,cs2pr
           coverage: xdebug
 
       - name: Setup problem matchers for PHP
@@ -60,7 +60,7 @@ jobs:
         run: tools/phpunit --coverage-clover build/coverage.xml
 
       - name: Run linting
-        run: tools/phpcs --standard=PSR12 --report=checkstyle src/
+        run: tools/phpcs -q --standard=PSR12 --report=checkstyle src/ | cs2pr
 
       - name: Run static analysis
         run: tools/psalm --output-format=github --shepherd
