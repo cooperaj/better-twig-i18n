@@ -51,13 +51,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: vendor
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}-${{ matrix.dependency-versions }}
           restore-keys: |
             ${{ runner.os }}-php-
 
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
-        run: composer install --prefer-dist --no-progress ${{ matrix.dependency-versions }}
+        run: composer update --prefer-dist --no-progress ${{ matrix.dependency-versions }}
 
       - name: Install tools
         run: phive --no-progress install --trust-gpg-keys 4AA394086372C20A,12CE0F1D262429A5,97B02DD8E5071466 phpunit@^${{ matrix.phpunit-versions }} psalm@^${{ matrix.psalm-versions }} phpcs
