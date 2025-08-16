@@ -22,9 +22,9 @@ abstract class AbstractFileExtractor implements ExtractorInterface
      * Pulls a list of php file info objects from a supplied filename, iterable list of filenames or directory name
      *
      * @param string $resource
-     * @return array<SplFileInfo>|Finder
+     * @return SplFileInfo[]|iterable<\Symfony\Component\Finder\SplFileInfo>
      */
-    protected function extractFiles(string $resource): array|Finder
+    protected function extractFiles(string $resource): iterable
     {
         if (is_file($resource)) {
             $files = $this->canBeExtracted($resource) ? [$this->toSplFileInfo($resource)] : [];
@@ -51,7 +51,11 @@ abstract class AbstractFileExtractor implements ExtractorInterface
         return $this->getExtension() === pathinfo($file, PATHINFO_EXTENSION);
     }
 
-    protected function extractFromDirectory(string $directory): Finder
+    /**
+     * @param string $directory
+     * @return iterable<\Symfony\Component\Finder\SplFileInfo>
+     */
+    protected function extractFromDirectory(string $directory): iterable
     {
         $finder = new Finder();
 

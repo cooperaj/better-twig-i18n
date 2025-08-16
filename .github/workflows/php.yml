@@ -7,19 +7,25 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  test-lint-and-analyse:
 
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        php-versions: [ '8.2', '8.3' ]
+        php-versions: [ '8.2', '8.3', '8.4' ]
         phpunit-versions: ['11.0']
         psalm-versions: ['6.0']
+        dependency-versions: ['']
         include:
           - php-versions: '8.1'
             phpunit-versions: '10.0'
             psalm-versions: '5.0'
+            dependency-versions: ''
+          - php-versions: '8.1'
+            phpunit-versions: '10.0'
+            psalm-versions: '5.0'
+            dependency-versions: '--prefer-lowest'
 
     steps:
       - name: Setup PHP with PECL extension
@@ -51,7 +57,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
-        run: composer install --prefer-dist --no-progress
+        run: composer install --prefer-dist --no-progress ${{ matrix.dependency-versions }}
 
       - name: Install tools
         run: phive --no-progress install --trust-gpg-keys 4AA394086372C20A,12CE0F1D262429A5,97B02DD8E5071466 phpunit@^${{ matrix.phpunit-versions }} psalm@^${{ matrix.psalm-versions }} phpcs
@@ -72,3 +78,4 @@ jobs:
           fail_ci_if_error: true
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        if: matrix.php-versions == '8.4'
