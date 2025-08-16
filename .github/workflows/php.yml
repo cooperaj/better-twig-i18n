@@ -21,11 +21,11 @@ jobs:
           - php-versions: '8.1'
             phpunit-versions: '10.0'
             psalm-versions: '5.0'
-            dependency-versions: ['']
+            dependency-versions: ''
           - php-versions: '8.1'
             phpunit-versions: '10.0'
             psalm-versions: '5.0'
-            dependency-versions: ['--prefer-lowest']
+            dependency-versions: '--prefer-lowest'
 
     steps:
       - name: Setup PHP with PECL extension
