@@ -7,13 +7,13 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  test-lint-and-analyse:
 
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        php-versions: [ '8.2', '8.3' ]
+        php-versions: [ '8.2', '8.3', '8.4' ]
         phpunit-versions: ['11.0']
         psalm-versions: ['6.0']
         dependency-versions: ['']
