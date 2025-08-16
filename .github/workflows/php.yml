@@ -60,10 +60,10 @@ jobs:
         run: tools/phpunit --coverage-clover build/coverage.xml
 
       - name: Run linting
-        run: tools/phpcs --standard=PSR12 src/
+        run: tools/phpcs --standard=PSR12 --report=checkstyle src/
 
       - name: Run static analysis
-        run: tools/psalm -- --output-format=github --shepherd
+        run: tools/psalm --output-format=github --shepherd
 
       - uses: codecov/codecov-action@v4
         with:
