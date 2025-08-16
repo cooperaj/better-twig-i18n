@@ -19,7 +19,7 @@ jobs:
         include:
           - php-versions: '8.1'
             phpunit-versions: '10.0'
-            psalm-versions: '6.0'
+            psalm-versions: '5.0'
 
     steps:
       - name: Setup PHP with PECL extension
