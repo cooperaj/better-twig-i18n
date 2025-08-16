@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Acpr\I18n\NodeVisitor;
 
-class Message
+final class Message
 {
     /**
      * @param string      $original The original text, or key to use for the translation
